@@ -37,7 +37,7 @@ The library function loads an R library such as the tidyverse, providing access 
 
 ### Task 1: The console
 
-**Task** In the console (look below), type 2+2 and hit enter. What does it return? Type your answer below. **Answer:**
+**Task** In the console (look below), type 2+2 and hit enter. What does it return? Type your answer below. **Answer: 4** 
 
 ### Task 2: Variables
 
@@ -55,7 +55,7 @@ number * number
 
 What does it return? Type your answer below:
 
-**Answer:**
+**Answer: 4**
 
 ### Task 3: Install packages
 
@@ -93,7 +93,7 @@ umd_courses <- read_rds("umd_courses.rds")
 
 Once it loads, look at the environment window at right in RStudio for umd_courses It's next to a small blue circle with a white arrow in it. To the right of that, look at how many "obs" the dataset has ("obs" is short for observation, which is another way of saying rows or records). Look at how many variables it has (another way of saying columns or fields). Write the number of observations and variables below.
 
-**Answer**
+**Answer: 60712 obs. of 8 variables**
 
 ### Task 6: Glimpse data
 
@@ -103,7 +103,8 @@ Once it loads, look at the environment window at right in RStudio for umd_course
 glimpse(umd_courses)
 ```
 
-In the space below, write the data type for the "id" column and the "seats" column (it's in light gray, offset by \< \>). **Answer**
+In the space below, write the data type for the "id" column and the "seats" column (it's in light gray, offset by \< \>). 
+**Answer: <chr>, <dbl>**
 
 ### Task 7: Examine data "head"
 
@@ -113,7 +114,8 @@ In the space below, write the data type for the "id" column and the "seats" colu
 head(umd_courses)
 ```
 
-In the space below, write the name of the business from the first row of the "name" column. **Answer**
+In the space below, write the name of the course from the first row of the "title" column. 
+**Answer:Directed Research**
 
 ### Task 8: Explore data with interactive dataframe
 
@@ -137,7 +139,7 @@ umd_courses |>
 
 Describe what you think each line of this code is doing below, based on the result:
 
-**Answer**
+**Answer: This code is counting the number of courses that are in each term**
 
 ### Task 10: Adding arrange to sort the data
 
@@ -152,7 +154,8 @@ umd_courses |>
   arrange(desc(count_classes))
 ```
 
-Compared to the previous codeblock, what has changed and how did that affect the result? **Answer**
+Compared to the previous codeblock, what has changed and how did that affect the result? 
+**Answer: The list is organized from highest to lowest "count_classes"**
 
 ### Task 11: Grouping by multiple columns
 
@@ -169,7 +172,7 @@ umd_courses |>
 
 Compared to the previous codeblock, how did the output change and what in the code changed it?
 
-**Answer**
+**Answer: The data is organized by two columns, first by term and then by department. There's also more detail than the first codeblock.**
 
 ### Task 12: Other summary functions
 
@@ -185,7 +188,8 @@ umd_courses |>
   arrange(desc(total_seats))
 ```
 
-Compared to the previous codeblock, what has changed and how did that affect the result? **Answer**
+Compared to the previous codeblock, what has changed and how did that affect the result? 
+**Answer: This codeblock is organized by total_seats in descending order.**
 
 ### Task 13: different kinds of summarizations
 
@@ -203,7 +207,8 @@ umd_courses |>
   arrange(desc(total_seats))
 ```
 
-Compared to the previous codeblock, what has changed and how did that affect the result? What do the top terms have in common? **Answer**
+Compared to the previous codeblock, what has changed and how did that affect the result? What do the top terms have in common? 
+**Answer: The columns are arranged in descending order based on total_seats. There are now two extra columns based on the mean and median of the seat column. The top terms all share a mean greater than 40 and a median greater than or equal to 20.**
 
 ### Task 14: more aggregations
 
@@ -211,30 +216,29 @@ Compared to the previous codeblock, what has changed and how did that affect the
 
 ```{r}
 umd_courses |>
-  group_by(department) |>
+  group_by(department)|>
   summarise(
     count_classes = n(),
     total_seats = sum(seats),
     mean_seats = mean(seats),
     median_seats = median(seats),
-    # add minimum seats here
-    # add maximum seats here
+    min_seats = min(seats),
+    max_seats = max(seats)
   ) |>
   arrange(desc(total_seats))
 ```
 
 Compared to the previous codeblock, what has changed and how did that affect the result? How is the data sorted?
 
-**Answer**
+**Answer: The data is now grouped by department and listed in descending order for total_seats within each department. We've also added the min and max functions.**
 
-### Task 12: Questions
+### Task 12: Questions  
 
 No code here; I want you to provide three questions that this data suggests to you. What would you like to ask it?
 
 **Answer**
+1. What occurred between terms 202212 and 201805 that lead to a significant increase in the total number of seats offered?
 
-1.  
+2. Why does the number of classes keep increasing with each term and how long might that trend continue?
 
-2.  
-
-3.  
+3. Why are the terms classified the way they are? Are they based on some sort of date?
