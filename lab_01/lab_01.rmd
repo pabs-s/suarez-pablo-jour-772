@@ -40,25 +40,56 @@ umd_courses <- read_rds("lab_01.rds")
 ## Answer questions
 
 **Q1** Which department has the highest mean (average) number of seats for its classes? You need to show the department with the highest average first. Which one is the most surprising/interesting to you?
-**A1**
+**A1: After organizing the list based on departments and by the mean number of class seats in descending order, the department with the highest "mean_seats" is Engineeering, Cooperative Education with roughly 306 seats per class. The department that's most interesting to me is Business and Management because it has 162,813 students across 1900 classes. I'd be interested in seeing a more specific distribution of class seats beyond the mean within that department.**
 
 ```{r}
+umd_courses |>
+  group_by(department)|>
+  summarise(
+    count_classes = n(),
+    total_seats = sum(seats),
+    mean_seats = mean(seats),
+  ) |>
+  arrange(desc(mean_seats))
 ```
 
 **Q2** Find out the greatest number of times any individual class has been offered in our dataset. Your code must show the greatest number of classes first. 
-**A2**
+**A2: I counted 133 classes that have each been held 22 times. AASP100: Introduction to African American Studies appears at the top of the list because the list is grouped by id in alphabetical order. I would also like to note that there are honors sections of the same class, like AASP100, which are not added to the count_id because the "H" at the end of their ID creates unique ID that is counted separately even though they are essentially the same class. Therefore, that skews this data.**
 
 ```{r}
+umd_courses |>
+  group_by(id, title)|>
+  summarise(
+     count_id = n(),
+  ) |>
+  arrange(desc(count_id))
 ```
 
-**Q3** Count the number of courses for each instructor and department. Which instructor has taught the most? **A3**
+**Q3** Count the number of courses for each instructor and department. Which instructor has taught the most? 
+**A3: Technically, the first instructor listed in my results is "TBA". However, we might assume those classes are distributed among many faculty members. The first actual name I got was Keith Yearwood from Geographical Sciences with 61 classes. (Disclaimer: I paid attention in class for the final piece on how to simplify the table to remove TBA names, but I did find the Keith Yearwood answer prior to that)**
 
 ```{r}
+umd_courses |>
+  group_by(instructors, department)|>
+  summarise(
+     count_classes = n(),
+  ) |>
+  arrange(desc(count_classes))|>
+  filter(!is.na(instructors) & instructors != "Instructor: TBA")
 ```
 
-**Q4** Given the results for Q3, what would have made it easier to find the answer? You don't have to know *how* to accomplish this; I want you to describe in words what would make the answer easier to see. How confident are you that the answer you got is the right one, and why? **A4**
+**Q4** Given the results for Q3, what would have made it easier to find the answer? You don't have to know *how* to accomplish this; I want you to describe in words what would make the answer easier to see. How confident are you that the answer you got is the right one, and why? 
+**A4: Similar to my disclaimer above: Although I ultimately found the answer, I did not know how to filter the table to exclude unpopulated rows and rows that listed the instructor as "TBA". Knowing that information would have made the answer apparent immediately. Even though I didn't have filtering information at the time, I still felt confident in my answer.**
 
-**Q5** Take one of the questions you listed in the final question of the pre_lab and try to answer it here in code. If you don't know how to fully answer it, write what code you can and describe in words what else you would need to do. If you got an answer, is it interesting? **A5**
+**Q5** Take one of the questions you listed in the final question of the pre_lab and try to answer it here in code. If you don't know how to fully answer it, write what code you can and describe in words what else you would need to do. If you got an answer, is it interesting? 
+**A5: How might I count the number of terms a course has been offered in at UMD and also see during which terms were they were offered? A: I was able to find out how many times a specific class was offered in each term, but I could not figure out how to count the number of terms in which each class appeared.**
 
 ```{r}
+umd_courses |>
+  group_by(title)|>
+  summarise(
+     count_classes = n(),
+  ) |>
+  arrange(desc(count_classes))
+
 ```
