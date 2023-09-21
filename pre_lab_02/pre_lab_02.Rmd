@@ -11,11 +11,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## This week's topics
 
-* Using filter() to find specific records
-* Using select() to see only certain columns
-* Using lubridate to work with dates
-* Using mutate() to add and update columns
-* Using case_when() to conditionally populate columns
+-   Using filter() to find specific records
+-   Using select() to see only certain columns
+-   Using lubridate to work with dates
+-   Using mutate() to add and update columns
+-   Using case_when() to conditionally populate columns
 
 ### Task 1: Load libraries
 
@@ -44,6 +44,8 @@ umd_courses <- read_rds("data/umd_courses.rds")
 summary(umd_courses)
 colnames(umd_courses)
 ```
+
+## The summary function gives me information about each column, depending on the data type (characters/strings vs integers/floats). The colnames function provides the names of each column in the data sheet.
 
 ## Filter and Select
 
@@ -91,7 +93,7 @@ And now we only have two columns of data for whatever analysis we might want to 
 
 Notice that we made a new variable to hold the result. Why is that important?
 
-**Answer**
+**Answer: It's important because it simplifies the dataset by not having to run that code every single time. The user can now reference that specific data using the new variable.**
 
 ### Task 6: Combining filters
 
@@ -125,7 +127,7 @@ and_theatre_seats_15 <- umd_courses |> filter(department == "Theatre" | seats >=
 nrow(and_theatre_seats_15)
 ```
 
-**Answer**
+**Answer: 41,011**
 
 When it comes to filters, OR is additive; AND is restrictive.
 
@@ -168,7 +170,7 @@ maryland_expenses <- maryland_expenses |> mutate(expenditure_date=mdy(expenditur
 head(maryland_expenses)
 ```
 
-**Answer:**
+**Answer: The data type changed from a character column to a date column. It also changed the formatting to year-month-day.**
 
 Lubridate has functions for basically any type of character date format: mdy, ymd, even datetimes like ymd_hms.
 
@@ -204,7 +206,7 @@ So the month of June 2022 had the most expenditures by far in this data.
 
 Describe the values in the new `month` column - what do you think is going on there?
 
-**Answer**
+**Answer: The values in the month column are arranged by total_amount in descending order. It seems like it uses the first day of the month for each month when it is looking for sum amounts.**
 
 ### Task 10: Mutate
 
@@ -234,7 +236,7 @@ general_22 <- general_22 |>
 
 Describe what you think this code is doing below.
 
-**Answer**
+**Answer: The code is calculating the total number votes between the candidates and then dividing that total from the total of Wes Moore's votes to find his percentage of votes won. It then mutates the table to show this percentage in a new column.**
 
 ### Task 11: Better percentage calculation
 
@@ -263,7 +265,7 @@ general_22 <- general_22 |>
 
 How did the answer change from the previous task, and why?
 
-**Answer**
+**Answer: The answer changed because the values in the pct_moore column have been turned into percentages by moving the decimal point two places to the right.**
 
 ### Task 13: Mutate with ordering, part 2
 
@@ -277,7 +279,7 @@ general_22 |>
 
 Is this a more interesting or useful answer? Why?
 
-**Answer**
+**Answer: This is an interesting answer because it helps us identify state counties where Moore was more highly contested.**
 
 ### Task 14: Standardize existing data using mutate
 
@@ -300,7 +302,7 @@ standardized_maryland_expenses <- maryland_expenses |>
 
 **Task** Search the Internet for tidyverse functions similar to str_to_upper. Name at least two and describe what they do. If you use ChatGPT for this, include the question you submitted.
 
-**Answer**
+**Answer: str_to_title() , which converts strings to title case, where only the first letter of each word is capitalized. str_to_sentence() which changes strings to where only the first letter of sentence is capitalized.**
 
 There are lots of potential uses for standardization - addresses, zip codes, anything that can be misspelled or abbreviated.
 
@@ -310,7 +312,7 @@ Mutate is even more useful when combined with some additional functions. Let's k
 
 **Task** Run the following code and look at the output. Then write a sentence or two describing what you think the mutate statement is doing step by step.
 
-**Answer**
+**Answer: The code is searching the address strings for the specific state names listed below. If it finds those states in the address, then it's using the corresponding string state abbreviations in a new column titled 'state'.**
 
 ```{r}
 maryland_expenses_with_state <- maryland_expenses |>
@@ -345,7 +347,7 @@ maryland_expenses_with_state |>
 
 Does this answer make sense to you? Why or why not?
 
-**Answer**
+**Answer: This answer makes sense in that we are seeing the total amount of payments coming from different states. Those that fall under NA are payments that came from states not included in the previous case_when function.**
 
 Mutate is there to make your data more useful and to make it easier for you to ask more and better questions of it.
 
@@ -355,8 +357,8 @@ Now that you have seen how to use mutate, filtering and dates, give me three que
 
 **Answer**
 
-1.
+1.  How could we arrange the table to see total amount by expense method and state?
 
-2.  
+2.  For the UMD course data, how can we mutate the courses to include honors classes in the same categories as their regular variants?
 
-3.  
+3.  How might I count the number of terms a course has been offered in at UMD and also see during which terms were they were offered?
