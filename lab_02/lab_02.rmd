@@ -32,35 +32,79 @@ maryland_expenses <- read_csv("data/maryland_expenses.csv")
 
 ## Answer questions
 
-**Q1.** How many departments have offered the courses with "Climate" in the title and at least one seat? Which department has offered the most? **A1.**
+**Q1.** How many departments have offered the courses with "Climate" in the title and at least one seat? Which department has offered the most? **A1. 27 departments have offered classes with "Climate" in the title and at least one seat. The atmospheric and oceanic science department has offered the most at 69.**
 
 ```{r}
+umd_courses |> 
+  group_by(department) |>
+  filter(str_detect(title, "Climate") & (sum(seats >= 1))) |>
+  summarise(count_class = n()) |>
+  arrange(desc(count_class))
 ```
 
 **Q2.** Of the departments listed in A1, which one is the most interesting to you, and why? 
-**A2.**
+**A2. The four courses of climate economics where the most interesting because it's a unique intersection of two disciplines who have great impact on each other but are often not considered in tandem.**
 
 **Q3** Which departments offered the most courses in the Fall 2023 term? And which departments in that term have at least one syllabus posted? Answer both of those questions and then compare the top five departments - how are they different?
 
-**A3.**
+**A3. The departments with the most courses in the Fall 2023 term are business and management, music, english, teaching/learning and information studies. After accounting for departments with at least one syllabus posted, it significantly reduced the number of classese and shifted the order. The new top five became business and management, economics, music, biological sciences and information studies.**
 
 ```{r}
+umd_courses |> 
+  group_by(department) |>
+  filter((term == 202308) & (syllabus_count >= 1)) |>
+  summarise(count_class = n()) |>
+  arrange(desc(count_class))
+```
+```{r}
+umd_courses |> 
+  group_by(department) |>
+  filter(term == 202308) |>
+  summarise(count_class = n()) |>
+  arrange(desc(count_class))
 ```
 
 **Q4.** Using the Maryland campaign expenses data, change the datatype of the expenditure_date column so that it is a date and not a chr, saving the result as a new dataframe. Then create a new column for the month based on expenditure_date. Then write code that shows total amount spent each month by Wes Moore's committee (you'll need to search the data to find the exact name, and we're not looking in payee_name). Write a sentence describing the pattern of spending over time. 
-**A4.**
+**A4. In June and July, the Moore Wes for Maryland committee at least doubled its spending compared to months leading up to that point. It spent the most amount of money in October, probably as a final push toward election day.**
 
 ```{r}
+new_dataframe <- maryland_expenses |> mutate(expenditure_date = mdy(expenditure_date)) |>
+  mutate(
+    exp_month = month(expenditure_date))
+   
+ new_dataframe |> 
+  group_by(exp_month) |>
+  filter(str_detect(committee_name, "Moore")) |>
+  summarise(amount_spent=sum(amount))
 ```
+
 
 **Q5.** Using case_when(), create a column in the Maryland expenses data called `spending_location` indicating whether each record spent money in Maryland or outside Maryland. For records that are in Maryland, make the new column's value "In-state" and for all others, make it "Out of state". Then write code that shows the total amount of money spent in each category and describe the results. You can do this in one statement or break it up into two statements (saving the new column to your dataframe).
-**A5**
+**A5: For the in-state section, the total is 77,723,146. The out of state section returned N/A, a problem which I couldn't figure out how to address.**
 
 ```{r}
+maryland_expenses <- maryland_expenses |>
+  mutate(
+   spending_location = case_when(
+        str_detect(address, " Maryland ") ~ "In-state", 
+        .default = "Out of State"
+      )
+  )
+
+maryland_expenses |>
+  group_by(spending_location) |>
+  summarise(
+    total = sum(amount)
+            )
 ```
 
-**Q6.** Choose your own adventure: using either the UMD courses or campaign expenses data, ask and answer a question that is different than the previous ones. You can use one of the ones you provided in the pre_lab. 
+**Q6.** Choose your own adventure: using either the UMD courses or campaign expenses data, ask and answer a question that is different than the previous ones. You can use one of the ones you provided in the pre_lab. My question: How could we create a table to see total amount by expense method and state?
 **A6.**
 
 ```{r}
+maryland_expenses_with_state |>
+   group_by(state, expense_method) |>
+  summarise(
+    total = sum(amount)
+            )
 ```
