@@ -37,13 +37,13 @@ cleaned_md_grants_loans <- md_grants_loans |>
 
 ## Answer questions
 
-Q1: You want to know how much money state agencies have paid to the Prince George's County School system, but to do that you'll need to find all of the variations of how the school system might be listed in the payments data. Look at & search the records in the dataframe to start your search, starting with a broad search and then narrowing it down. Then write code to find rows where the vendor name contains some version of the county's school system. 
+Q1: You want to know how much money state agencies have paid to the Prince George's County School system, but to do that you'll need to find all of the variations of how the school system might be listed in the payments data. Look at & search the records in the dataframe to start your search, starting with a broad search and then narrowing it down. Then write code to find rows where the vendor name contains some version of the county's school system.
 
 HINT: you should use filter() just once, and inside your filter you want to look for the variations one at a time. Think "this version OR that version."
 
-When you have found as many as possible, save the result to a new dataframe called `pg_schools`. How many records did you find? 
+When you have found as many as possible, save the result to a new dataframe called `pg_schools`. How many records did you find?
 
-A1: I found 46 records of PG County schools. 
+A1: I found 46 records of PG County schools.
 
 ```{r}
 cleaned_payments |>
@@ -58,30 +58,52 @@ pg_schools <- cleaned_payments |>
 
 Q2: Using that `pg_schools` dataframe, write code to calculate the total amount of payments to the Prince George's County School system for each fiscal year. Which fiscal year had the largest total amount? Are there any aspects of the results that stand out to you?
 
-A2:
+A2: Fiscal year 2021 had the largest total amount. I noticed that there are a few years missing in this data, including 2011, 2012 and 2016-2020. I also noticed that the total amounts do not have decimal points for cents like the figures above do.
 
 ```{r}
+pg_schools |>
+  group_by(fiscal_year) |>
+  summarise(total = sum(amount)) |>
+  arrange(desc(total))
+
 ```
 
-Q3. You're interested in examining the vendors paid for capital projects at the University of Maryland. Search the payments data to find those payments, then write code to produce a list of each vendor and the total amount it received. 
+Q3. You're interested in examining the vendors paid for capital projects at the University of Maryland. Search the payments data to find those payments, then write code to produce a list of each vendor and the total amount it received.
 
 Look carefully at that list - what cleaning will it require to ensure that you have only one row per vendor and zip code? Provide at least three examples of vendor names that are similar and should be combined into one. Describe in words how you might clean that data so that any nearly identical vendors would look identical - what would you change and how?
 
-A3.
+A3.Examples: WHITING TURNER CONTRACTING CO/WHITING TURNER CONTRACTING COMPANY, BALLINGER/THE BALLINGER CO, GLOBAL EQUIPMENT CO/GLOBAL EQUIPMENT COMPANY INC
+
+To clean the data, I would use the case_when function to create a new column called vendor_name_clean that uses the str_detect function to find identical vendors and group them under one name and also by zip code.
 
 ```{r}
+cleaned_payments |>
+  filter(str_detect(agency_name, "CAPITAL PROJECTS- UNIVERSITY OF MARYLAND")) |>
+   group_by(vendor_name) |>
+    summarise(total = sum(amount)) |>
+  arrange(desc(total))
 ```
 
 Q4: You want to understand how much state grant money went to stem cell research projects each fiscal year. Search the data to find grants that fit that description. Once you find which column(s) contain the information you want, your code should find just the grants for stem cell research in a single filter. Then calculate the total amount of money for each fiscal year. Write a sentence summarizing how stem cell research funding has changed over time.
 
-A4:
+A4: Stem cell research funding saw a dramatic drop from 2009 to 2010 when it fell from roughly \$14.64 million to \$7.87 million. Since 2010, funding has moderately fluctuated between roughly \$6-9 million, but has never even coming close to the 2009 peak.
 
 ```{r}
+cleaned_md_grants_loans |>
+  filter(str_detect(description, "Stem Cell Research Grant")) |>
+    group_by(fiscal_year) |>
+      summarise(total = sum(amount)) |>
+  arrange(desc(fiscal_year))
 ```
 
 Q5: Using the Maryland grants and loan data, find records where the zip code is the one where the University of Maryland-College Park is located in and produce a list of grantees from that zip code, along with the total amount they received. Write a paragraph explaining how many grantees are there, what you would need to do to clean the results so that you had one record per grantee and which grantees are most interesting to you?
 
-A5:
+A5: Based on the results of my code, there are 18 grantees that reside in the UMCP zip code. However, it's worth noting that half of the results are either the University of Maryland or a university-affiliated office, center or organization. One method I could use to clean the results for one record per grantee is to use the mutate function to create a new column that employs the case_when function. The case_when function would identify references to UMD in its various spellings and modify them to be classified as the University of Maryland. The grantee that is most interesting to me is Haystack Solutions because it was awarded two major loans and is the first grantee on the list that seemingly exists outside of the UMD sphere.  
 
 ```{r}
+cleaned_md_grants_loans |>
+  filter(str_detect(zip_code, "20742")) |>
+    group_by(grantee) |>
+      summarise(total = sum(amount)) |>
+  arrange(desc(total))
 ```
