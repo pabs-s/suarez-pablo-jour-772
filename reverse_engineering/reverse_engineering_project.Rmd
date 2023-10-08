@@ -1,0 +1,29 @@
+---
+title: "Rreverse_engineering_project"
+output: html_notebook
+---
+We started by loading our libraries and settings in the notebook
+```{r}
+#load libraries and settings
+library(tidyverse)
+```
+We then imported our data set into RStudio.
+
+```{r}
+#load data set
+sports_political_donations <- read_csv("data/sports-political-donations.csv")
+
+sports_political_donations
+```
+MLB owners have donated the most:
+We need to narrow down specific partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, by party, from 2016 to 2020 as the authors of the article did.
+```{r}
+```
+Significantly more money goes to Republicans:
+We need to narrow down specific partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, per election cycle as the authors of the article did.
+```{r}
+```
+Which team owners gave the most?
+We need to single out donations from team owners by cycle and party donated to.
+```{r}
+```
