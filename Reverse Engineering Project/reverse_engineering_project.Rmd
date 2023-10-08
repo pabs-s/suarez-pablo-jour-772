@@ -1,0 +1,67 @@
+---
+title: "Reverse Engineering Project"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+options(scipen=999)
+library(tidyverse)
+library(lubridate)
+library(refinr)
+library(janitor)
+```
+
+
+```{r}
+
+read.csv("/Users/psuarez/Documents/GitHub/suarez-pablo-jour-772/Reverse Engineering Project/Data/sports-political-donations.csv")|>
+  clean_names()
+
+```
+
+MLB owners have donated the most
+Specifically partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, by party, 2016-20
+
+```{r}
+political_donations <- read.csv("/Users/psuarez/Documents/GitHub/suarez-pablo-jour-772/Reverse Engineering Project/Data/sports-political-donations.csv")
+ 
+political_donations_clean <- transform(political_donations, Amount = as.numeric(Amount))
+ #grop by league
+  # summarize 
+  # col 1 = sum(amount) where party = rep
+  # col 2 = sum(amount) where party = dem
+  #col 3 = sum (amount)
+ 
+   
+
+
+
+```
+
+
+Significantly more money goes to Republicans
+Specifically partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, per election cycle
+```{r}
+
+
+```
+
+
+Which team owners gave the most?
+Donations from team owners, by cyle and party donated to
+
+```{r}
+
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
