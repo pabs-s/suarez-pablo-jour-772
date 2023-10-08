@@ -1,11 +1,15 @@
 ---
 title: "Rreverse_engineering_project"
+author: "Pablo Suarez & Mikayla Roberts"
+date: "2023-10-03"
 output: html_notebook
 ---
 We started by loading our libraries and settings in the notebook
 ```{r}
 #load libraries and settings
 library(tidyverse)
+library(janitor)
+library(dplyr)
 ```
 We then imported our data set into RStudio.
 
@@ -15,15 +19,19 @@ sports_political_donations <- read_csv("data/sports-political-donations.csv")
 
 sports_political_donations
 ```
-MLB owners have donated the most:
-We need to narrow down specific partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, by party, from 2016 to 2020 as the authors of the article did.
+Then we cleaned the data set so that all the column names were uniform, the 'recipient' names were all upper case, and the 'amount' column was a number set rather than a character set.
 ```{r}
-```
-Significantly more money goes to Republicans:
-We need to narrow down specific partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, per election cycle as the authors of the article did.
-```{r}
+clean_sports_pol_donations <- sports_political_donations |>
+  clean_names() |>
+  mutate(recipient = str_to_upper(recipient))
+
+clean_sports_pol_donations
 ```
 Which team owners gave the most?
-We need to single out donations from team owners by cycle and party donated to.
+We need to single out donations from team owners by cycle and party donated to. We were able to almost completely replicate the data presented however, we were unable to trouble-shoot the 'election_cycle' column.
 ```{r}
+clean_sports_pol_donations |>
+  group_by(owner, team, league, party) |>
+  summarize(total_amount = sum(amount)) |>
+  arrange(desc(total_amount))
 ```
