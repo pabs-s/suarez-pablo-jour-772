@@ -13,6 +13,7 @@ library(tidyverse)
 library(lubridate)
 library(refinr)
 library(janitor)
+library(dplyr)
 ```
 
 
@@ -30,11 +31,16 @@ Specifically partisan contributions from owners and commissioners in the NFL, NB
 political_donations <- read.csv("/Users/psuarez/Documents/GitHub/suarez-pablo-jour-772/Reverse Engineering Project/Data/sports-political-donations.csv")
  
 political_donations_clean <- transform(political_donations, Amount = as.numeric(Amount))
- #grop by league
+ group_by(league) |>
+   summarize(
+     
+   )
+
+#group by league
   # summarize 
   # col 1 = sum(amount) where party = rep
   # col 2 = sum(amount) where party = dem
-  #col 3 = sum (amount)
+  # col 3 = sum (amount)
  
    
 
@@ -52,7 +58,7 @@ Specifically partisan contributions from owners and commissioners in the NFL, NB
 
 
 Which team owners gave the most?
-Donations from team owners, by cyle and party donated to
+Donations from team owners, by cycle and party donated to
 
 ```{r}
 
