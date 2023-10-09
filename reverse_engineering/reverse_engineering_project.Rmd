@@ -15,7 +15,7 @@ We then imported our data set into RStudio.
 
 ```{r}
 #load data set
-sports_political_donations <- read_csv("data/sports-political-donations.csv")
+sports_political_donations <- read_csv("data/sports-political-donations - sports-political-donations.csv")
 
 sports_political_donations
 ```
