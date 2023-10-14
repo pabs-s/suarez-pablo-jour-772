@@ -20,6 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 options(scipen=999)
 
 # Load the tidyverse.
+library(tidyverse)
 
 ```
 
@@ -42,32 +43,53 @@ From there, you will need to read in the data, and add or fix headers if necessa
 You will need to read in and clean up the data so that it can be used for analysis. By "clean" I mean the column headers should not contain spaces and they should have meaningful names, not "x1" or something similar. How you do that is up to you, but you can use select() with or without the minus sign to include or exclude certain columns. You also can use the `rename` function to, well, rename columns. Importantly, you'll need to ensure that any columns containing a date actually have a date datatype. Our friend `lubridate` can help with this.
 
 ```{r}
+bc_overdoses <- read_csv("data/tabula-Baltimore County; Carey, Samantha log OD.csv", col_names = FALSE) |>
+ clean_names() |> 
+  rename(date = x1, time = x2, case_num = x3, od_type = x4, address = x5) |>
+  mutate(date = mdy(date)) 
 ```
 
 ## Answer questions
 
 Q1. Write code to generate the number of calls that occurred on each date. Which date in 2022 had the most overdose calls, and how many? Look at the total number of rows in your result and explore the range of dates - based on your result, do you believe there are any days with no overdose calls at all? Explain why or why not.
 
-A1. 
-
+A1. The date in 2022 with the most overdose calls was Oct. 04. Based on my results, I believe that there aren't any days with no overdose calls reflected in the data. For example, there weren't any overdoses added to the dataset for 2022-03-16 and 2022-03-17. There could have been overdoses that took place on those days, but they might not have been reported, and this dataset only includes the reported overdoses.
 ```{r}
+bc_overdoses |>
+  group_by(date) |>
+    summarise(total = n()) |>
+    arrange(desc(total))
 ```
 
 Q2. You want to understand if there's a pattern in the day of the week that overdose calls are made. Add a column to your dataframe that displays what day of the week each date represents. You should search for how to do that using lubridate. Then write code to calculate the number of calls for each day of the week, and add a column to that result that calculates the percentage of all calls that occurred on each day of the week (so you want a dataframe with the day of the week, total number of calls and the percentage of calls on that day out of the total number of all calls). Describe your findings to me.
 
-A2. 
-
+A2. Sunday, the day with the highest number of calls, had one more call than Saturday (413 to 412). Both accounted for roughly 16% of calls. They are followed by Friday (368 calls, 14.38624%), Monday (361 calls, 14.11259), Tuesday (360 calls, 14.07349%), Wednesday (342 calls, 13.36982%) and Thursday (302 calls, 11.80610%).
 ```{r}
+bc_overdoses_wday <- bc_overdoses |>
+  mutate(weekday = wday(date, label = TRUE))
 ```
+```{r}
+final_bc_overdoses <- bc_overdoses_wday |>
+  group_by(weekday) |>
+  summarise(total = n()) |>
+  mutate(percent = total/sum(total) *100) |>
+    arrange(desc(total))
+```
+
 
 Q3. Now let's look at locations. Which ones have the most calls? How would you describe them (feel free to search for more information on them)? Is there anything about the structure of the original data that might make you less confident in the counts by location or date?
 
-A3. 
+A3. The top three locations with the most calls are 4540 SILVER SPRING RD, 330 LEEANNE RD and PC 06; 115 SUSQUEHANNA AV W. The first two addresses are associated with homes in suburban areas, while the third is the address for a police station. I'd feel more confident in the locations if we were given full addresses and zip codes, as well as whether the locations represent where the overdoses took place or where the report was filed. There's also a possibility that some of the overdosed individuals could be homeless and the addresses used in their reports represent the closest physical address to where their overdose took place. I feel the same about the dates, it would be beneficial to have more context in terms of whether they represent the time of the overdoses or just when the reports were filed. 
 
 ```{r}
-
+bc_overdoses_wday |>
+  group_by(address) |>
+  summarise(total = n()) |>
+    arrange(desc(total))
 ```
 
 Q4. What's the best story idea or question you've seen as a result of the work you've done in this lab?
 
-A4. 
+A4. Two story ideas I have: 
+1. Why are 20 overdoses attributed to an indiscriminate home address in Perry Hall, Md.? Does it have to do with a flaw in the reporting system?
+2. Why were there 23 overdoses on Oct. 4, 2022? 
