@@ -35,3 +35,48 @@ clean_sports_pol_donations |>
   summarize(total_amount = sum(amount)) |>
   arrange(desc(total_amount))
 ```
+
+"Significantly more money goes to Republicans: Specifically partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, per election cycle"
+For this chart, we will need to group contributions by election year, and then create columns for each year that break down donations by party and then also show the total amount donated that year. This can be achieved by making separate dataframes for each party's donations and then merging the dataframes.
+
+```{r}
+rep_df <- clean_sports_pol_donations |>
+  group_by(election_year, party) |>
+    summarise(total_amount=sum(amount)) |>
+    filter(party=="Republican") |>
+    arrange(desc(total_amount))
+
+rep_df_clean = subset(rep_df, select = -c(party))
+
+```
+```{r}
+dem_df <- clean_sports_pol_donations |>
+  group_by(election_year, party) |>
+    summarise(total_amount=sum(amount)) |>
+    filter(party=="Democrat") |>
+    arrange(desc(total_amount))
+
+dem_df_clean = subset(dem_df, select = -c(party))
+
+```
+
+```{r}
+rep_df_clean <- rep_df_clean |>
+  rename("to_republicans" = "total_amount")
+```
+
+```{r}
+dem_df_clean <- dem_df_clean |>
+  rename("to_democrats" = "total_amount")
+```
+```{r}
+year_party_donations <- merge(rep_df_clean, dem_df_clean, by = "election_year")
+
+```
+
+```{r}
+year_party_donations <- 
+year_party_donations |>
+  mutate(total = to_democrats + to_republicans) |>
+  arrange(desc(election_year))
+```
