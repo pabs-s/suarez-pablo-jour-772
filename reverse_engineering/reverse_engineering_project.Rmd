@@ -80,3 +80,114 @@ year_party_donations |>
   mutate(total = to_democrats + to_republicans) |>
   arrange(desc(election_year))
 ```
+
+MLB owners have donated the most
+Specifically partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, by party, 2016-20
+
+```{r}
+mlb_republican <- clean_sports_pol_donations |>
+  group_by(party, league) |>
+  filter(party == "Republican" & str_detect(league, "MLB")) |>
+  summarise(total = sum(amount))
+
+  #summarise(MLB_rep = case_when(str_detect(league,'MLB') ~ sum(amount)))
+ 
+```
+
+```{r}
+  sum(mlb_republican$total)
+```
+```{r}
+mlb_democrat <- clean_sports_pol_donations |>
+  group_by(party, league) |>
+  filter(party == "Democrat" & str_detect(league, "MLB")) |>
+  summarise(total = sum(amount))
+```
+```{r}
+nba_republican <- clean_sports_pol_donations |>
+  group_by(party, league) |>
+   filter(party == "Republican" & str_detect(league, "NBA") & league != "WNBA") |>
+  summarise(total = sum(amount))
+
+#& league != "MLB, WNBA" & league != "WNBA")
+
+```
+
+```{r}
+nba_democrat <- clean_sports_pol_donations |>
+  group_by(party, league) |>
+  filter(party == "Democrat" & str_detect(league, "NBA") & league != "MLB, WNBA" & league != "WNBA") |>
+  summarise(total = sum(amount))
+```
+
+```{r}
+nhl_republican <- clean_sports_pol_donations |>
+  group_by(party, league) |>
+  filter(party == "Republican" & str_detect(league, "NHL")) |>
+  summarise(total = sum(amount))
+```
+
+```{r}
+nhl_democrat <- clean_sports_pol_donations |>
+  group_by(party, league) |>
+  filter(party == "Democrat" & str_detect(league, "NHL")) |>
+  summarise(total = sum(amount))
+```
+
+```{r}
+nfl_republican <- clean_sports_pol_donations |>
+  group_by(party, league) |>
+  filter(party == "Republican" & str_detect(league, "NFL")) |>
+  summarise(total = sum(amount))
+```
+
+```{r}
+nfl_democrat <- clean_sports_pol_donations |>
+  group_by(party, league) |>
+  filter(party == "Democrat" & str_detect(league, "NFL")) |>
+  summarise(total = sum(amount))
+```
+
+```{r}
+wnba_republican <- clean_sports_pol_donations |>
+  group_by(party, league) |>
+  filter(party == "Republican" & str_detect(league, "WNBA")) |>
+  summarise(total = sum(amount))
+```
+
+```{r}
+wnba_democrat <- clean_sports_pol_donations |>
+  group_by(party, league) |>
+  filter(party == "Democrat" & str_detect(league, "WNBA")) |>
+  summarise(total = sum(amount))
+```
+
+```{r}
+nascar_republican <- clean_sports_pol_donations |>
+  group_by(party, league) |>
+  filter(party == "Republican" & str_detect(league, "NASCAR")) |>
+  summarise(total = sum(amount))
+```
+
+```{r}
+nascar_democrat <- clean_sports_pol_donations |>
+  group_by(party, league) |>
+  filter(party == "Democrat" & str_detect(league, "NASCAR")) |>
+  summarise(total = sum(amount))
+```
+
+```{r}
+league_donations <- data.frame (league  = c("MLB", "NBA", "NHL", "NFL", "WNBA", "NASCAR"),
+    to_republicans = c(sum(mlb_republican$total), sum(nba_republican$total), sum(nhl_republican$total), sum(nfl_republican$total), sum(wnba_republican$total), sum(nascar_republican$total)),
+    to_democrats = c(sum(mlb_democrat$total), sum(nba_democrat$total), sum(nhl_democrat$total), sum(nfl_democrat$total), sum(wnba_democrat$total), sum(nascar_democrat$total)))
+
+```
+
+```{r}
+league_donations <- league_donations |>
+  mutate(total = to_republicans + to_democrats)
+```
+
+
+
+

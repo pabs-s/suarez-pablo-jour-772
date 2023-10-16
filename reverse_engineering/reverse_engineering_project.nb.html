@@ -1909,8 +1909,207 @@ year_party_donations |&gt;
   arrange(desc(election_year))</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>MLB owners have donated the most Specifically partisan contributions
+from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and
+NASCAR, by party, 2016-20</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWxiX3JlcHVibGljYW4gPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD5cbiAgZ3JvdXBfYnkocGFydHksIGxlYWd1ZSkgfD5cbiAgZmlsdGVyKHBhcnR5ID09IFwiUmVwdWJsaWNhblwiICYgc3RyX2RldGVjdChsZWFndWUsIFwiTUxCXCIpKSB8PlxuICBzdW1tYXJpc2UodG90YWwgPSBzdW0oYW1vdW50KSlcbmBgYCJ9 -->
+<pre class="r"><code>mlb_republican &lt;- clean_sports_pol_donations |&gt;
+  group_by(party, league) |&gt;
+  filter(party == &quot;Republican&quot; &amp; str_detect(league, &quot;MLB&quot;)) |&gt;
+  summarise(total = sum(amount))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3BhcnR5Jy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
+<pre><code>`summarise()` has grouped output by &#39;party&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIHN1bShtbGJfcmVwdWJsaWNhbiR0b3RhbClcbmBgYCJ9 -->
+<pre class="r"><code> sum(mlb_republican$total)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE1MTgxNzYxXG4ifQ== -->
+<pre><code>[1] 15181761</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuICAjc3VtbWFyaXNlKE1MQl9yZXAgPSBjYXNlX3doZW4oc3RyX2RldGVjdChsZWFndWUsJ01MQicpIH4gc3VtKGFtb3VudCkpKVxuIFxuYGBgIn0= -->
+<pre class="r"><code>  #summarise(MLB_rep = case_when(str_detect(league,&#39;MLB&#39;) ~ sum(amount)))
+ </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuICBzdW0obWxiX3JlcHVibGljYW4kdG90YWwpXG5gYGAifQ== -->
+<pre class="r"><code>  sum(mlb_republican$total)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDE1MTgxNzYxXG4ifQ== -->
+<pre><code>[1] 15181761</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWxiX2RlbW9jcmF0IDwtIGNsZWFuX3Nwb3J0c19wb2xfZG9uYXRpb25zIHw+XG4gIGdyb3VwX2J5KHBhcnR5LCBsZWFndWUpIHw+XG4gIGZpbHRlcihwYXJ0eSA9PSBcIkRlbW9jcmF0XCIgJiBzdHJfZGV0ZWN0KGxlYWd1ZSwgXCJNTEJcIikpIHw+XG4gIHN1bW1hcmlzZSh0b3RhbCA9IHN1bShhbW91bnQpKVxuYGBgIn0= -->
+<pre class="r"><code>mlb_democrat &lt;- clean_sports_pol_donations |&gt;
+  group_by(party, league) |&gt;
+  filter(party == &quot;Democrat&quot; &amp; str_detect(league, &quot;MLB&quot;)) |&gt;
+  summarise(total = sum(amount))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3BhcnR5Jy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
+<pre><code>`summarise()` has grouped output by &#39;party&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmJhX3JlcHVibGljYW4gPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD5cbiAgZ3JvdXBfYnkocGFydHksIGxlYWd1ZSkgfD5cbiAgIGZpbHRlcihwYXJ0eSA9PSBcIlJlcHVibGljYW5cIiAmIHN0cl9kZXRlY3QobGVhZ3VlLCBcIk5CQVwiKSAmIGxlYWd1ZSAhPSBcIldOQkFcIikgfD5cbiAgc3VtbWFyaXNlKHRvdGFsID0gc3VtKGFtb3VudCkpXG5gYGAifQ== -->
+<pre class="r"><code>nba_republican &lt;- clean_sports_pol_donations |&gt;
+  group_by(party, league) |&gt;
+   filter(party == &quot;Republican&quot; &amp; str_detect(league, &quot;NBA&quot;) &amp; league != &quot;WNBA&quot;) |&gt;
+  summarise(total = sum(amount))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3BhcnR5Jy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
+<pre><code>`summarise()` has grouped output by &#39;party&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyYgbGVhZ3VlICE9IFwiTUxCLCBXTkJBXCIgJiBsZWFndWUgIT0gXCJXTkJBXCIpXG5cbmBgYCJ9 -->
+<pre class="r"><code>#&amp; league != &quot;MLB, WNBA&quot; &amp; league != &quot;WNBA&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmJhX2RlbW9jcmF0IDwtIGNsZWFuX3Nwb3J0c19wb2xfZG9uYXRpb25zIHw+XG4gIGdyb3VwX2J5KHBhcnR5LCBsZWFndWUpIHw+XG4gIGZpbHRlcihwYXJ0eSA9PSBcIkRlbW9jcmF0XCIgJiBzdHJfZGV0ZWN0KGxlYWd1ZSwgXCJOQkFcIikgJiBsZWFndWUgIT0gXCJNTEIsIFdOQkFcIiAmIGxlYWd1ZSAhPSBcIldOQkFcIikgfD5cbiAgc3VtbWFyaXNlKHRvdGFsID0gc3VtKGFtb3VudCkpXG5gYGAifQ== -->
+<pre class="r"><code>nba_democrat &lt;- clean_sports_pol_donations |&gt;
+  group_by(party, league) |&gt;
+  filter(party == &quot;Democrat&quot; &amp; str_detect(league, &quot;NBA&quot;) &amp; league != &quot;MLB, WNBA&quot; &amp; league != &quot;WNBA&quot;) |&gt;
+  summarise(total = sum(amount))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3BhcnR5Jy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
+<pre><code>`summarise()` has grouped output by &#39;party&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmhsX3JlcHVibGljYW4gPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD5cbiAgZ3JvdXBfYnkocGFydHksIGxlYWd1ZSkgfD5cbiAgZmlsdGVyKHBhcnR5ID09IFwiUmVwdWJsaWNhblwiICYgc3RyX2RldGVjdChsZWFndWUsIFwiTkhMXCIpKSB8PlxuICBzdW1tYXJpc2UodG90YWwgPSBzdW0oYW1vdW50KSlcbmBgYCJ9 -->
+<pre class="r"><code>nhl_republican &lt;- clean_sports_pol_donations |&gt;
+  group_by(party, league) |&gt;
+  filter(party == &quot;Republican&quot; &amp; str_detect(league, &quot;NHL&quot;)) |&gt;
+  summarise(total = sum(amount))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3BhcnR5Jy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
+<pre><code>`summarise()` has grouped output by &#39;party&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmhsX2RlbW9jcmF0IDwtIGNsZWFuX3Nwb3J0c19wb2xfZG9uYXRpb25zIHw+XG4gIGdyb3VwX2J5KHBhcnR5LCBsZWFndWUpIHw+XG4gIGZpbHRlcihwYXJ0eSA9PSBcIkRlbW9jcmF0XCIgJiBzdHJfZGV0ZWN0KGxlYWd1ZSwgXCJOSExcIikpIHw+XG4gIHN1bW1hcmlzZSh0b3RhbCA9IHN1bShhbW91bnQpKVxuYGBgIn0= -->
+<pre class="r"><code>nhl_democrat &lt;- clean_sports_pol_donations |&gt;
+  group_by(party, league) |&gt;
+  filter(party == &quot;Democrat&quot; &amp; str_detect(league, &quot;NHL&quot;)) |&gt;
+  summarise(total = sum(amount))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3BhcnR5Jy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
+<pre><code>`summarise()` has grouped output by &#39;party&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmZsX3JlcHVibGljYW4gPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD5cbiAgZ3JvdXBfYnkocGFydHksIGxlYWd1ZSkgfD5cbiAgZmlsdGVyKHBhcnR5ID09IFwiUmVwdWJsaWNhblwiICYgc3RyX2RldGVjdChsZWFndWUsIFwiTkZMXCIpKSB8PlxuICBzdW1tYXJpc2UodG90YWwgPSBzdW0oYW1vdW50KSlcbmBgYCJ9 -->
+<pre class="r"><code>nfl_republican &lt;- clean_sports_pol_donations |&gt;
+  group_by(party, league) |&gt;
+  filter(party == &quot;Republican&quot; &amp; str_detect(league, &quot;NFL&quot;)) |&gt;
+  summarise(total = sum(amount))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3BhcnR5Jy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
+<pre><code>`summarise()` has grouped output by &#39;party&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmZsX2RlbW9jcmF0IDwtIGNsZWFuX3Nwb3J0c19wb2xfZG9uYXRpb25zIHw+XG4gIGdyb3VwX2J5KHBhcnR5LCBsZWFndWUpIHw+XG4gIGZpbHRlcihwYXJ0eSA9PSBcIkRlbW9jcmF0XCIgJiBzdHJfZGV0ZWN0KGxlYWd1ZSwgXCJORkxcIikpIHw+XG4gIHN1bW1hcmlzZSh0b3RhbCA9IHN1bShhbW91bnQpKVxuYGBgIn0= -->
+<pre class="r"><code>nfl_democrat &lt;- clean_sports_pol_donations |&gt;
+  group_by(party, league) |&gt;
+  filter(party == &quot;Democrat&quot; &amp; str_detect(league, &quot;NFL&quot;)) |&gt;
+  summarise(total = sum(amount))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3BhcnR5Jy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
+<pre><code>`summarise()` has grouped output by &#39;party&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud25iYV9yZXB1YmxpY2FuIDwtIGNsZWFuX3Nwb3J0c19wb2xfZG9uYXRpb25zIHw+XG4gIGdyb3VwX2J5KHBhcnR5LCBsZWFndWUpIHw+XG4gIGZpbHRlcihwYXJ0eSA9PSBcIlJlcHVibGljYW5cIiAmIHN0cl9kZXRlY3QobGVhZ3VlLCBcIldOQkFcIikpIHw+XG4gIHN1bW1hcmlzZSh0b3RhbCA9IHN1bShhbW91bnQpKVxuYGBgIn0= -->
+<pre class="r"><code>wnba_republican &lt;- clean_sports_pol_donations |&gt;
+  group_by(party, league) |&gt;
+  filter(party == &quot;Republican&quot; &amp; str_detect(league, &quot;WNBA&quot;)) |&gt;
+  summarise(total = sum(amount))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3BhcnR5Jy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
+<pre><code>`summarise()` has grouped output by &#39;party&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud25iYV9kZW1vY3JhdCA8LSBjbGVhbl9zcG9ydHNfcG9sX2RvbmF0aW9ucyB8PlxuICBncm91cF9ieShwYXJ0eSwgbGVhZ3VlKSB8PlxuICBmaWx0ZXIocGFydHkgPT0gXCJEZW1vY3JhdFwiICYgc3RyX2RldGVjdChsZWFndWUsIFwiV05CQVwiKSkgfD5cbiAgc3VtbWFyaXNlKHRvdGFsID0gc3VtKGFtb3VudCkpXG5gYGAifQ== -->
+<pre class="r"><code>wnba_democrat &lt;- clean_sports_pol_donations |&gt;
+  group_by(party, league) |&gt;
+  filter(party == &quot;Democrat&quot; &amp; str_detect(league, &quot;WNBA&quot;)) |&gt;
+  summarise(total = sum(amount))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3BhcnR5Jy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
+<pre><code>`summarise()` has grouped output by &#39;party&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmFzY2FyX3JlcHVibGljYW4gPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD5cbiAgZ3JvdXBfYnkocGFydHksIGxlYWd1ZSkgfD5cbiAgZmlsdGVyKHBhcnR5ID09IFwiUmVwdWJsaWNhblwiICYgc3RyX2RldGVjdChsZWFndWUsIFwiTkFTQ0FSXCIpKSB8PlxuICBzdW1tYXJpc2UodG90YWwgPSBzdW0oYW1vdW50KSlcbmBgYCJ9 -->
+<pre class="r"><code>nascar_republican &lt;- clean_sports_pol_donations |&gt;
+  group_by(party, league) |&gt;
+  filter(party == &quot;Republican&quot; &amp; str_detect(league, &quot;NASCAR&quot;)) |&gt;
+  summarise(total = sum(amount))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3BhcnR5Jy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
+<pre><code>`summarise()` has grouped output by &#39;party&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmFzY2FyX2RlbW9jcmF0IDwtIGNsZWFuX3Nwb3J0c19wb2xfZG9uYXRpb25zIHw+XG4gIGdyb3VwX2J5KHBhcnR5LCBsZWFndWUpIHw+XG4gIGZpbHRlcihwYXJ0eSA9PSBcIkRlbW9jcmF0XCIgJiBzdHJfZGV0ZWN0KGxlYWd1ZSwgXCJOQVNDQVJcIikpIHw+XG4gIHN1bW1hcmlzZSh0b3RhbCA9IHN1bShhbW91bnQpKVxuYGBgIn0= -->
+<pre class="r"><code>nascar_democrat &lt;- clean_sports_pol_donations |&gt;
+  group_by(party, league) |&gt;
+  filter(party == &quot;Democrat&quot; &amp; str_detect(league, &quot;NASCAR&quot;)) |&gt;
+  summarise(total = sum(amount))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiYHN1bW1hcmlzZSgpYCBoYXMgZ3JvdXBlZCBvdXRwdXQgYnkgJ3BhcnR5Jy4gWW91IGNhbiBvdmVycmlkZSB1c2luZyB0aGUgYC5ncm91cHNgIGFyZ3VtZW50LlxuIn0= -->
+<pre><code>`summarise()` has grouped output by &#39;party&#39;. You can override using the `.groups` argument.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGVhZ3VlX2RvbmF0aW9ucyA8LSBkYXRhLmZyYW1lIChsZWFndWUgID0gYyhcIk1MQlwiLCBcIk5CQVwiLCBcIk5ITFwiLCBcIk5GTFwiLCBcIldOQkFcIiwgXCJOQVNDQVJcIiksXG4gICAgdG9fcmVwdWJsaWNhbnMgPSBjKHN1bShtbGJfcmVwdWJsaWNhbiR0b3RhbCksIHN1bShuYmFfcmVwdWJsaWNhbiR0b3RhbCksIHN1bShuaGxfcmVwdWJsaWNhbiR0b3RhbCksIHN1bShuZmxfcmVwdWJsaWNhbiR0b3RhbCksIHN1bSh3bmJhX3JlcHVibGljYW4kdG90YWwpLCBzdW0obmFzY2FyX3JlcHVibGljYW4kdG90YWwpKSxcbiAgICB0b19kZW1vY3JhdHMgPSBjKHN1bShtbGJfZGVtb2NyYXQkdG90YWwpLCBzdW0obmJhX2RlbW9jcmF0JHRvdGFsKSwgc3VtKG5obF9kZW1vY3JhdCR0b3RhbCksIHN1bShuZmxfZGVtb2NyYXQkdG90YWwpLCBzdW0od25iYV9kZW1vY3JhdCR0b3RhbCksIHN1bShuYXNjYXJfZGVtb2NyYXQkdG90YWwpKSlcblxuYGBgIn0= -->
+<pre class="r"><code>league_donations &lt;- data.frame (league  = c(&quot;MLB&quot;, &quot;NBA&quot;, &quot;NHL&quot;, &quot;NFL&quot;, &quot;WNBA&quot;, &quot;NASCAR&quot;),
+    to_republicans = c(sum(mlb_republican$total), sum(nba_republican$total), sum(nhl_republican$total), sum(nfl_republican$total), sum(wnba_republican$total), sum(nascar_republican$total)),
+    to_democrats = c(sum(mlb_democrat$total), sum(nba_democrat$total), sum(nhl_democrat$total), sum(nfl_democrat$total), sum(wnba_democrat$total), sum(nascar_democrat$total)))
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGVhZ3VlX2RvbmF0aW9ucyA8LSBsZWFndWVfZG9uYXRpb25zIHw+XG4gIG11dGF0ZSh0b3RhbCA9IHRvX3JlcHVibGljYW5zICsgdG9fZGVtb2NyYXRzKVxuYGBgIn0= -->
+<pre class="r"><code>league_donations &lt;- league_donations |&gt;
+  mutate(total = to_republicans + to_democrats)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUnJldmVyc2VfZW5naW5lZXJpbmdfcHJvamVjdCIKYXV0aG9yOiAiUGFibG8gU3VhcmV6ICYgTWlrYXlsYSBSb2JlcnRzIgpkYXRlOiAiMjAyMy0xMC0wMyIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQpXZSBzdGFydGVkIGJ5IGxvYWRpbmcgb3VyIGxpYnJhcmllcyBhbmQgc2V0dGluZ3MgaW4gdGhlIG5vdGVib29rCmBgYHtyfQojbG9hZCBsaWJyYXJpZXMgYW5kIHNldHRpbmdzCmxpYnJhcnkodGlkeXZlcnNlKQpsaWJyYXJ5KGphbml0b3IpCmxpYnJhcnkoZHBseXIpCmBgYApXZSB0aGVuIGltcG9ydGVkIG91ciBkYXRhIHNldCBpbnRvIFJTdHVkaW8uCgpgYGB7cn0KI2xvYWQgZGF0YSBzZXQKc3BvcnRzX3BvbGl0aWNhbF9kb25hdGlvbnMgPC0gcmVhZF9jc3YoImRhdGEvc3BvcnRzLXBvbGl0aWNhbC1kb25hdGlvbnMgLSBzcG9ydHMtcG9saXRpY2FsLWRvbmF0aW9ucy5jc3YiKQoKc3BvcnRzX3BvbGl0aWNhbF9kb25hdGlvbnMKYGBgClRoZW4gd2UgY2xlYW5lZCB0aGUgZGF0YSBzZXQgc28gdGhhdCBhbGwgdGhlIGNvbHVtbiBuYW1lcyB3ZXJlIHVuaWZvcm0sIHRoZSAncmVjaXBpZW50JyBuYW1lcyB3ZXJlIGFsbCB1cHBlciBjYXNlLCBhbmQgdGhlICdhbW91bnQnIGNvbHVtbiB3YXMgYSBudW1iZXIgc2V0IHJhdGhlciB0aGFuIGEgY2hhcmFjdGVyIHNldC4KYGBge3J9CmNsZWFuX3Nwb3J0c19wb2xfZG9uYXRpb25zIDwtIHNwb3J0c19wb2xpdGljYWxfZG9uYXRpb25zIHw+CiAgY2xlYW5fbmFtZXMoKSB8PgogIG11dGF0ZShyZWNpcGllbnQgPSBzdHJfdG9fdXBwZXIocmVjaXBpZW50KSkKCmNsZWFuX3Nwb3J0c19wb2xfZG9uYXRpb25zCmBgYApXaGljaCB0ZWFtIG93bmVycyBnYXZlIHRoZSBtb3N0PwpXZSBuZWVkIHRvIHNpbmdsZSBvdXQgZG9uYXRpb25zIGZyb20gdGVhbSBvd25lcnMgYnkgY3ljbGUgYW5kIHBhcnR5IGRvbmF0ZWQgdG8uIFdlIHdlcmUgYWJsZSB0byBhbG1vc3QgY29tcGxldGVseSByZXBsaWNhdGUgdGhlIGRhdGEgcHJlc2VudGVkIGhvd2V2ZXIsIHdlIHdlcmUgdW5hYmxlIHRvIHRyb3VibGUtc2hvb3QgdGhlICdlbGVjdGlvbl9jeWNsZScgY29sdW1uLgpgYGB7cn0KY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD4KICBncm91cF9ieShvd25lciwgdGVhbSwgbGVhZ3VlLCBwYXJ0eSkgfD4KICBzdW1tYXJpemUodG90YWxfYW1vdW50ID0gc3VtKGFtb3VudCkpIHw+CiAgYXJyYW5nZShkZXNjKHRvdGFsX2Ftb3VudCkpCmBgYAoKIlNpZ25pZmljYW50bHkgbW9yZSBtb25leSBnb2VzIHRvIFJlcHVibGljYW5zOiBTcGVjaWZpY2FsbHkgcGFydGlzYW4gY29udHJpYnV0aW9ucyBmcm9tIG93bmVycyBhbmQgY29tbWlzc2lvbmVycyBpbiB0aGUgTkZMLCBOQkEsIFdOQkEsIE5ITCwgTUxCIGFuZCBOQVNDQVIsIHBlciBlbGVjdGlvbiBjeWNsZSIKRm9yIHRoaXMgY2hhcnQsIHdlIHdpbGwgbmVlZCB0byBncm91cCBjb250cmlidXRpb25zIGJ5IGVsZWN0aW9uIHllYXIsIGFuZCB0aGVuIGNyZWF0ZSBjb2x1bW5zIGZvciBlYWNoIHllYXIgdGhhdCBicmVhayBkb3duIGRvbmF0aW9ucyBieSBwYXJ0eSBhbmQgdGhlbiBhbHNvIHNob3cgdGhlIHRvdGFsIGFtb3VudCBkb25hdGVkIHRoYXQgeWVhci4gVGhpcyBjYW4gYmUgYWNoaWV2ZWQgYnkgbWFraW5nIHNlcGFyYXRlIGRhdGFmcmFtZXMgZm9yIGVhY2ggcGFydHkncyBkb25hdGlvbnMgYW5kIHRoZW4gbWVyZ2luZyB0aGUgZGF0YWZyYW1lcy4KCmBgYHtyfQpyZXBfZGYgPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD4KICBncm91cF9ieShlbGVjdGlvbl95ZWFyLCBwYXJ0eSkgfD4KICAgIHN1bW1hcmlzZSh0b3RhbF9hbW91bnQ9c3VtKGFtb3VudCkpIHw+CiAgICBmaWx0ZXIocGFydHk9PSJSZXB1YmxpY2FuIikgfD4KICAgIGFycmFuZ2UoZGVzYyh0b3RhbF9hbW91bnQpKQoKcmVwX2RmX2NsZWFuID0gc3Vic2V0KHJlcF9kZiwgc2VsZWN0ID0gLWMocGFydHkpKQoKYGBgCmBgYHtyfQpkZW1fZGYgPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD4KICBncm91cF9ieShlbGVjdGlvbl95ZWFyLCBwYXJ0eSkgfD4KICAgIHN1bW1hcmlzZSh0b3RhbF9hbW91bnQ9c3VtKGFtb3VudCkpIHw+CiAgICBmaWx0ZXIocGFydHk9PSJEZW1vY3JhdCIpIHw+CiAgICBhcnJhbmdlKGRlc2ModG90YWxfYW1vdW50KSkKCmRlbV9kZl9jbGVhbiA9IHN1YnNldChkZW1fZGYsIHNlbGVjdCA9IC1jKHBhcnR5KSkKCmBgYAoKYGBge3J9CnJlcF9kZl9jbGVhbiA8LSByZXBfZGZfY2xlYW4gfD4KICByZW5hbWUoInRvX3JlcHVibGljYW5zIiA9ICJ0b3RhbF9hbW91bnQiKQpgYGAKCmBgYHtyfQpkZW1fZGZfY2xlYW4gPC0gZGVtX2RmX2NsZWFuIHw+CiAgcmVuYW1lKCJ0b19kZW1vY3JhdHMiID0gInRvdGFsX2Ftb3VudCIpCmBgYApgYGB7cn0KeWVhcl9wYXJ0eV9kb25hdGlvbnMgPC0gbWVyZ2UocmVwX2RmX2NsZWFuLCBkZW1fZGZfY2xlYW4sIGJ5ID0gImVsZWN0aW9uX3llYXIiKQoKYGBgCgpgYGB7cn0KeWVhcl9wYXJ0eV9kb25hdGlvbnMgPC0gCnllYXJfcGFydHlfZG9uYXRpb25zIHw+CiAgbXV0YXRlKHRvdGFsID0gdG9fZGVtb2NyYXRzICsgdG9fcmVwdWJsaWNhbnMpIHw+CiAgYXJyYW5nZShkZXNjKGVsZWN0aW9uX3llYXIpKQpgYGAK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUnJldmVyc2VfZW5naW5lZXJpbmdfcHJvamVjdCIKYXV0aG9yOiAiUGFibG8gU3VhcmV6ICYgTWlrYXlsYSBSb2JlcnRzIgpkYXRlOiAiMjAyMy0xMC0wMyIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQpXZSBzdGFydGVkIGJ5IGxvYWRpbmcgb3VyIGxpYnJhcmllcyBhbmQgc2V0dGluZ3MgaW4gdGhlIG5vdGVib29rCmBgYHtyfQojbG9hZCBsaWJyYXJpZXMgYW5kIHNldHRpbmdzCmxpYnJhcnkodGlkeXZlcnNlKQpsaWJyYXJ5KGphbml0b3IpCmxpYnJhcnkoZHBseXIpCmBgYApXZSB0aGVuIGltcG9ydGVkIG91ciBkYXRhIHNldCBpbnRvIFJTdHVkaW8uCgpgYGB7cn0KI2xvYWQgZGF0YSBzZXQKc3BvcnRzX3BvbGl0aWNhbF9kb25hdGlvbnMgPC0gcmVhZF9jc3YoImRhdGEvc3BvcnRzLXBvbGl0aWNhbC1kb25hdGlvbnMgLSBzcG9ydHMtcG9saXRpY2FsLWRvbmF0aW9ucy5jc3YiKQoKc3BvcnRzX3BvbGl0aWNhbF9kb25hdGlvbnMKYGBgClRoZW4gd2UgY2xlYW5lZCB0aGUgZGF0YSBzZXQgc28gdGhhdCBhbGwgdGhlIGNvbHVtbiBuYW1lcyB3ZXJlIHVuaWZvcm0sIHRoZSAncmVjaXBpZW50JyBuYW1lcyB3ZXJlIGFsbCB1cHBlciBjYXNlLCBhbmQgdGhlICdhbW91bnQnIGNvbHVtbiB3YXMgYSBudW1iZXIgc2V0IHJhdGhlciB0aGFuIGEgY2hhcmFjdGVyIHNldC4KYGBge3J9CmNsZWFuX3Nwb3J0c19wb2xfZG9uYXRpb25zIDwtIHNwb3J0c19wb2xpdGljYWxfZG9uYXRpb25zIHw+CiAgY2xlYW5fbmFtZXMoKSB8PgogIG11dGF0ZShyZWNpcGllbnQgPSBzdHJfdG9fdXBwZXIocmVjaXBpZW50KSkKCmNsZWFuX3Nwb3J0c19wb2xfZG9uYXRpb25zCmBgYApXaGljaCB0ZWFtIG93bmVycyBnYXZlIHRoZSBtb3N0PwpXZSBuZWVkIHRvIHNpbmdsZSBvdXQgZG9uYXRpb25zIGZyb20gdGVhbSBvd25lcnMgYnkgY3ljbGUgYW5kIHBhcnR5IGRvbmF0ZWQgdG8uIFdlIHdlcmUgYWJsZSB0byBhbG1vc3QgY29tcGxldGVseSByZXBsaWNhdGUgdGhlIGRhdGEgcHJlc2VudGVkIGhvd2V2ZXIsIHdlIHdlcmUgdW5hYmxlIHRvIHRyb3VibGUtc2hvb3QgdGhlICdlbGVjdGlvbl9jeWNsZScgY29sdW1uLgpgYGB7cn0KY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD4KICBncm91cF9ieShvd25lciwgdGVhbSwgbGVhZ3VlLCBwYXJ0eSkgfD4KICBzdW1tYXJpemUodG90YWxfYW1vdW50ID0gc3VtKGFtb3VudCkpIHw+CiAgYXJyYW5nZShkZXNjKHRvdGFsX2Ftb3VudCkpCmBgYAoKIlNpZ25pZmljYW50bHkgbW9yZSBtb25leSBnb2VzIHRvIFJlcHVibGljYW5zOiBTcGVjaWZpY2FsbHkgcGFydGlzYW4gY29udHJpYnV0aW9ucyBmcm9tIG93bmVycyBhbmQgY29tbWlzc2lvbmVycyBpbiB0aGUgTkZMLCBOQkEsIFdOQkEsIE5ITCwgTUxCIGFuZCBOQVNDQVIsIHBlciBlbGVjdGlvbiBjeWNsZSIKRm9yIHRoaXMgY2hhcnQsIHdlIHdpbGwgbmVlZCB0byBncm91cCBjb250cmlidXRpb25zIGJ5IGVsZWN0aW9uIHllYXIsIGFuZCB0aGVuIGNyZWF0ZSBjb2x1bW5zIGZvciBlYWNoIHllYXIgdGhhdCBicmVhayBkb3duIGRvbmF0aW9ucyBieSBwYXJ0eSBhbmQgdGhlbiBhbHNvIHNob3cgdGhlIHRvdGFsIGFtb3VudCBkb25hdGVkIHRoYXQgeWVhci4gVGhpcyBjYW4gYmUgYWNoaWV2ZWQgYnkgbWFraW5nIHNlcGFyYXRlIGRhdGFmcmFtZXMgZm9yIGVhY2ggcGFydHkncyBkb25hdGlvbnMgYW5kIHRoZW4gbWVyZ2luZyB0aGUgZGF0YWZyYW1lcy4KCmBgYHtyfQpyZXBfZGYgPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD4KICBncm91cF9ieShlbGVjdGlvbl95ZWFyLCBwYXJ0eSkgfD4KICAgIHN1bW1hcmlzZSh0b3RhbF9hbW91bnQ9c3VtKGFtb3VudCkpIHw+CiAgICBmaWx0ZXIocGFydHk9PSJSZXB1YmxpY2FuIikgfD4KICAgIGFycmFuZ2UoZGVzYyh0b3RhbF9hbW91bnQpKQoKcmVwX2RmX2NsZWFuID0gc3Vic2V0KHJlcF9kZiwgc2VsZWN0ID0gLWMocGFydHkpKQoKYGBgCmBgYHtyfQpkZW1fZGYgPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD4KICBncm91cF9ieShlbGVjdGlvbl95ZWFyLCBwYXJ0eSkgfD4KICAgIHN1bW1hcmlzZSh0b3RhbF9hbW91bnQ9c3VtKGFtb3VudCkpIHw+CiAgICBmaWx0ZXIocGFydHk9PSJEZW1vY3JhdCIpIHw+CiAgICBhcnJhbmdlKGRlc2ModG90YWxfYW1vdW50KSkKCmRlbV9kZl9jbGVhbiA9IHN1YnNldChkZW1fZGYsIHNlbGVjdCA9IC1jKHBhcnR5KSkKCmBgYAoKYGBge3J9CnJlcF9kZl9jbGVhbiA8LSByZXBfZGZfY2xlYW4gfD4KICByZW5hbWUoInRvX3JlcHVibGljYW5zIiA9ICJ0b3RhbF9hbW91bnQiKQpgYGAKCmBgYHtyfQpkZW1fZGZfY2xlYW4gPC0gZGVtX2RmX2NsZWFuIHw+CiAgcmVuYW1lKCJ0b19kZW1vY3JhdHMiID0gInRvdGFsX2Ftb3VudCIpCmBgYApgYGB7cn0KeWVhcl9wYXJ0eV9kb25hdGlvbnMgPC0gbWVyZ2UocmVwX2RmX2NsZWFuLCBkZW1fZGZfY2xlYW4sIGJ5ID0gImVsZWN0aW9uX3llYXIiKQoKYGBgCgpgYGB7cn0KeWVhcl9wYXJ0eV9kb25hdGlvbnMgPC0gCnllYXJfcGFydHlfZG9uYXRpb25zIHw+CiAgbXV0YXRlKHRvdGFsID0gdG9fZGVtb2NyYXRzICsgdG9fcmVwdWJsaWNhbnMpIHw+CiAgYXJyYW5nZShkZXNjKGVsZWN0aW9uX3llYXIpKQpgYGAKCk1MQiBvd25lcnMgaGF2ZSBkb25hdGVkIHRoZSBtb3N0ClNwZWNpZmljYWxseSBwYXJ0aXNhbiBjb250cmlidXRpb25zIGZyb20gb3duZXJzIGFuZCBjb21taXNzaW9uZXJzIGluIHRoZSBORkwsIE5CQSwgV05CQSwgTkhMLCBNTEIgYW5kIE5BU0NBUiwgYnkgcGFydHksIDIwMTYtMjAKCmBgYHtyfQptbGJfcmVwdWJsaWNhbiA8LSBjbGVhbl9zcG9ydHNfcG9sX2RvbmF0aW9ucyB8PgogIGdyb3VwX2J5KHBhcnR5LCBsZWFndWUpIHw+CiAgZmlsdGVyKHBhcnR5ID09ICJSZXB1YmxpY2FuIiAmIHN0cl9kZXRlY3QobGVhZ3VlLCAiTUxCIikpIHw+CiAgc3VtbWFyaXNlKHRvdGFsID0gc3VtKGFtb3VudCkpCgogICNzdW1tYXJpc2UoTUxCX3JlcCA9IGNhc2Vfd2hlbihzdHJfZGV0ZWN0KGxlYWd1ZSwnTUxCJykgfiBzdW0oYW1vdW50KSkpCiAKYGBgCgpgYGB7cn0KICBzdW0obWxiX3JlcHVibGljYW4kdG90YWwpCmBgYApgYGB7cn0KbWxiX2RlbW9jcmF0IDwtIGNsZWFuX3Nwb3J0c19wb2xfZG9uYXRpb25zIHw+CiAgZ3JvdXBfYnkocGFydHksIGxlYWd1ZSkgfD4KICBmaWx0ZXIocGFydHkgPT0gIkRlbW9jcmF0IiAmIHN0cl9kZXRlY3QobGVhZ3VlLCAiTUxCIikpIHw+CiAgc3VtbWFyaXNlKHRvdGFsID0gc3VtKGFtb3VudCkpCmBgYApgYGB7cn0KbmJhX3JlcHVibGljYW4gPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD4KICBncm91cF9ieShwYXJ0eSwgbGVhZ3VlKSB8PgogICBmaWx0ZXIocGFydHkgPT0gIlJlcHVibGljYW4iICYgc3RyX2RldGVjdChsZWFndWUsICJOQkEiKSAmIGxlYWd1ZSAhPSAiV05CQSIpIHw+CiAgc3VtbWFyaXNlKHRvdGFsID0gc3VtKGFtb3VudCkpCgojJiBsZWFndWUgIT0gIk1MQiwgV05CQSIgJiBsZWFndWUgIT0gIldOQkEiKQoKYGBgCgpgYGB7cn0KbmJhX2RlbW9jcmF0IDwtIGNsZWFuX3Nwb3J0c19wb2xfZG9uYXRpb25zIHw+CiAgZ3JvdXBfYnkocGFydHksIGxlYWd1ZSkgfD4KICBmaWx0ZXIocGFydHkgPT0gIkRlbW9jcmF0IiAmIHN0cl9kZXRlY3QobGVhZ3VlLCAiTkJBIikgJiBsZWFndWUgIT0gIk1MQiwgV05CQSIgJiBsZWFndWUgIT0gIldOQkEiKSB8PgogIHN1bW1hcmlzZSh0b3RhbCA9IHN1bShhbW91bnQpKQpgYGAKCmBgYHtyfQpuaGxfcmVwdWJsaWNhbiA8LSBjbGVhbl9zcG9ydHNfcG9sX2RvbmF0aW9ucyB8PgogIGdyb3VwX2J5KHBhcnR5LCBsZWFndWUpIHw+CiAgZmlsdGVyKHBhcnR5ID09ICJSZXB1YmxpY2FuIiAmIHN0cl9kZXRlY3QobGVhZ3VlLCAiTkhMIikpIHw+CiAgc3VtbWFyaXNlKHRvdGFsID0gc3VtKGFtb3VudCkpCmBgYAoKYGBge3J9Cm5obF9kZW1vY3JhdCA8LSBjbGVhbl9zcG9ydHNfcG9sX2RvbmF0aW9ucyB8PgogIGdyb3VwX2J5KHBhcnR5LCBsZWFndWUpIHw+CiAgZmlsdGVyKHBhcnR5ID09ICJEZW1vY3JhdCIgJiBzdHJfZGV0ZWN0KGxlYWd1ZSwgIk5ITCIpKSB8PgogIHN1bW1hcmlzZSh0b3RhbCA9IHN1bShhbW91bnQpKQpgYGAKCmBgYHtyfQpuZmxfcmVwdWJsaWNhbiA8LSBjbGVhbl9zcG9ydHNfcG9sX2RvbmF0aW9ucyB8PgogIGdyb3VwX2J5KHBhcnR5LCBsZWFndWUpIHw+CiAgZmlsdGVyKHBhcnR5ID09ICJSZXB1YmxpY2FuIiAmIHN0cl9kZXRlY3QobGVhZ3VlLCAiTkZMIikpIHw+CiAgc3VtbWFyaXNlKHRvdGFsID0gc3VtKGFtb3VudCkpCmBgYAoKYGBge3J9Cm5mbF9kZW1vY3JhdCA8LSBjbGVhbl9zcG9ydHNfcG9sX2RvbmF0aW9ucyB8PgogIGdyb3VwX2J5KHBhcnR5LCBsZWFndWUpIHw+CiAgZmlsdGVyKHBhcnR5ID09ICJEZW1vY3JhdCIgJiBzdHJfZGV0ZWN0KGxlYWd1ZSwgIk5GTCIpKSB8PgogIHN1bW1hcmlzZSh0b3RhbCA9IHN1bShhbW91bnQpKQpgYGAKCmBgYHtyfQp3bmJhX3JlcHVibGljYW4gPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD4KICBncm91cF9ieShwYXJ0eSwgbGVhZ3VlKSB8PgogIGZpbHRlcihwYXJ0eSA9PSAiUmVwdWJsaWNhbiIgJiBzdHJfZGV0ZWN0KGxlYWd1ZSwgIldOQkEiKSkgfD4KICBzdW1tYXJpc2UodG90YWwgPSBzdW0oYW1vdW50KSkKYGBgCgpgYGB7cn0Kd25iYV9kZW1vY3JhdCA8LSBjbGVhbl9zcG9ydHNfcG9sX2RvbmF0aW9ucyB8PgogIGdyb3VwX2J5KHBhcnR5LCBsZWFndWUpIHw+CiAgZmlsdGVyKHBhcnR5ID09ICJEZW1vY3JhdCIgJiBzdHJfZGV0ZWN0KGxlYWd1ZSwgIldOQkEiKSkgfD4KICBzdW1tYXJpc2UodG90YWwgPSBzdW0oYW1vdW50KSkKYGBgCgpgYGB7cn0KbmFzY2FyX3JlcHVibGljYW4gPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD4KICBncm91cF9ieShwYXJ0eSwgbGVhZ3VlKSB8PgogIGZpbHRlcihwYXJ0eSA9PSAiUmVwdWJsaWNhbiIgJiBzdHJfZGV0ZWN0KGxlYWd1ZSwgIk5BU0NBUiIpKSB8PgogIHN1bW1hcmlzZSh0b3RhbCA9IHN1bShhbW91bnQpKQpgYGAKCmBgYHtyfQpuYXNjYXJfZGVtb2NyYXQgPC0gY2xlYW5fc3BvcnRzX3BvbF9kb25hdGlvbnMgfD4KICBncm91cF9ieShwYXJ0eSwgbGVhZ3VlKSB8PgogIGZpbHRlcihwYXJ0eSA9PSAiRGVtb2NyYXQiICYgc3RyX2RldGVjdChsZWFndWUsICJOQVNDQVIiKSkgfD4KICBzdW1tYXJpc2UodG90YWwgPSBzdW0oYW1vdW50KSkKYGBgCgpgYGB7cn0KbGVhZ3VlX2RvbmF0aW9ucyA8LSBkYXRhLmZyYW1lIChsZWFndWUgID0gYygiTUxCIiwgIk5CQSIsICJOSEwiLCAiTkZMIiwgIldOQkEiLCAiTkFTQ0FSIiksCiAgICB0b19yZXB1YmxpY2FucyA9IGMoc3VtKG1sYl9yZXB1YmxpY2FuJHRvdGFsKSwgc3VtKG5iYV9yZXB1YmxpY2FuJHRvdGFsKSwgc3VtKG5obF9yZXB1YmxpY2FuJHRvdGFsKSwgc3VtKG5mbF9yZXB1YmxpY2FuJHRvdGFsKSwgc3VtKHduYmFfcmVwdWJsaWNhbiR0b3RhbCksIHN1bShuYXNjYXJfcmVwdWJsaWNhbiR0b3RhbCkpLAogICAgdG9fZGVtb2NyYXRzID0gYyhzdW0obWxiX2RlbW9jcmF0JHRvdGFsKSwgc3VtKG5iYV9kZW1vY3JhdCR0b3RhbCksIHN1bShuaGxfZGVtb2NyYXQkdG90YWwpLCBzdW0obmZsX2RlbW9jcmF0JHRvdGFsKSwgc3VtKHduYmFfZGVtb2NyYXQkdG90YWwpLCBzdW0obmFzY2FyX2RlbW9jcmF0JHRvdGFsKSkpCgpgYGAKCmBgYHtyfQpsZWFndWVfZG9uYXRpb25zIDwtIGxlYWd1ZV9kb25hdGlvbnMgfD4KICBtdXRhdGUodG90YWwgPSB0b19yZXB1YmxpY2FucyArIHRvX2RlbW9jcmF0cykKYGBgCgoKCgo=</div>
 
 
 
