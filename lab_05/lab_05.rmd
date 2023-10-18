@@ -21,7 +21,6 @@ options(scipen=999)
 
 # Load the tidyverse.
 library(tidyverse)
-
 ```
 
 ## Get Our PDF

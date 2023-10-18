@@ -31,7 +31,9 @@ library(lubridate)
 
 Let's say that we have Maryland county voter registration data from four different elections in three different files. They have a similar layout and the same number of counties (plus Baltimore City).
 
-**Task** Load the four CSV population estimate files. Do they have the same column structure? **Answer**
+**Task** Load the four CSV population estimate files. Do they have the same column structure? 
+**Answer**
+2016 and 2018 have the same column structure and order. 2020 and 2022 have the same column headings as the previous two datasets, but the columns are listed in a different order. For 2022 specifically, it's "total" column is undercase while all other files have that title in uppercase.
 
 ```{r}
 county_voters_2016 <- read_csv("data/county_voters_2016.csv")
@@ -43,6 +45,8 @@ county_voters_2022 <- read_csv("data/county_voters_2022.csv")
 ### Task 3: Using bind_rows
 
 **Task** Combine the four files into a single data frame using the bind_rows function. Add a description of what this code does to your reference notebook.
+**Answer** 
+All of the files have been merged into one file that shares the column structure and order as the 2016 and 2018 files. It is organized in descending order based on year and there are two columns for TOTAL and total. Only the 2022 figures fall under the lowercase version because that is how it was listed in only that file.
 
 ```{r}
 # bind_rows with list
@@ -52,8 +56,9 @@ View(county_voters_combined)
 
 ### Task 4: Asking a question
 
-**Task** Run the following code to filter on Frederick County's registration data and look at the results. What stands out to you about the changes in party registration over time? **Answer**
-
+**Task** Run the following code to filter on Frederick County's registration data and look at the results. What stands out to you about the changes in party registration over time? 
+**Answer**
+I'm most interested in seeing the significant increase in total voters as a whole. This increase seems to benefit the Democratic Party the most as it gained almost 18,000 voters. The next highest were unaffiliated voters, followed by a much smaller increase with the Republican Party. The rest, unsurprisingly to me, seem to be pretty stable.
 ```{r}
 county_voters_combined |> filter(COUNTY == 'Frederick')
 ```
@@ -71,7 +76,9 @@ view(maryland_population)
 
 ### Task 6: Join population and voter data
 
-**Task** Run the following code to join Maryland population data and the 2022 voter registration data together using the common column county as the key. How many rows are there now? How many *should* there be? **Answer**
+**Task** Run the following code to join Maryland population data and the 2022 voter registration data together using the common column county as the key. How many rows are there now? How many *should* there be? 
+**Answer**
+The data from the previous task suggests there should be 24 rows. After running this code, there are 24 rows.
 
 ```{r}
 # with nrow included to show row total
@@ -92,6 +99,8 @@ maryland_population |> left_join(county_voters_2022, join_by("COUNTY"))
 By default, `dplyr` will do a "natural" join, where it'll match all the matching columns in both tables. So if we take out the `join_by()`, it'll use all the common columns between the tables. That may not be right in every instance but let's try it. If it works, we should get 24 rows.
 
 **Task** Create a new dataframe with population and voter data joined together. Add a description of what this code does to your reference notebook.
+**Answer**
+This code created a new dataframe merging the population data with voter registration data, with each row representing a different county.
 
 ```{r}
 maryland_population_with_voters <- maryland_population |> left_join(county_voters_2022)
@@ -99,7 +108,9 @@ maryland_population_with_voters <- maryland_population |> left_join(county_voter
 
 ### Task 9: Add the Demographic Data
 
-**Task** Load the Maryland demographic data and examine it. What kind of information does it contain? **Answer**
+**Task** Load the Maryland demographic data and examine it. What kind of information does it contain? 
+**Answer**
+This file contains population demographic information by county. It shows the geocode for each county, the number of people in each county broken down by race, as well as the number of people above the age of 18.
 
 ```{r}
 maryland_demographics <- read_csv('data/maryland_demographics.csv')
@@ -116,7 +127,9 @@ maryland_population_with_voters_and_demographics <- maryland_population_with_vot
 
 ### Task 11: Asking Demographic Questions
 
-**Task** Using mutate, let's find the county with the highest 18+ Black population as a percentage of all population 18 and over and also the percentage of Democrats in that county. Put your answers below. **Answer**
+**Task** Using mutate, let's find the county with the highest 18+ Black population as a percentage of all population 18 and over and also the percentage of Democrats in that county. Put your answers below. 
+**Answer**
+Prince George's	County had the highest 18+ Black population with 60.9035922%, and had the highest percentage of Democrats with 77.09508%.	
 
 ```{r}
 maryland_population_with_voters_and_demographics |>
@@ -127,7 +140,9 @@ maryland_population_with_voters_and_demographics |>
 
 ### Task 12: Asking Demographic Questions
 
-**Task** Now let's find the county with the highest 18+ Asian population as a percentage of all population 18 and over and also the percentage of Democrats in that county. How do these results compare to the previous task? Put your answers below. **Answer**
+**Task** Now let's find the county with the highest 18+ Asian population as a percentage of all population 18 and over and also the percentage of Democrats in that county. How do these results compare to the previous task? Put your answers below. 
+**Answer**
+Howard County is the county with the highest 18+ Asian population as a percentage of all population at 19.367% and its percentage of Democrats is 52.57%. The percentage of Asian residents is significantly lower than the percentage of Black residents. It's also harder to get a sense of how Asian residents contribute to the percentage of Democratic voters.
 
 ```{r}
 maryland_population_with_voters_and_demographics |>
@@ -140,7 +155,9 @@ maryland_population_with_voters_and_demographics |>
 
 Sometimes joins look like they should work but don't. Often this is due to the two columns you're joining on having different data types: joining a <chr> column to a <dbl> column, for example. Let's walk through an example of that using some demographic data by zip code.
 
-**Task** Run the following code to load the Zip Code Tabulation Area data for Maryland. What's the datatype of the ZCTA5N column? **Answer**
+**Task** Run the following code to load the Zip Code Tabulation Area data for Maryland. What's the datatype of the ZCTA5N column? 
+**Answer**
+The ZCTA5N column is a dbl datatype, suggesting that it's a numeric column. However, zip codes and ZCTAs are better suited as characters datatypes.
 
 ```{r}
 maryland_zcta <- read_csv('data/maryland_zcta.csv')
@@ -149,10 +166,14 @@ glimpse(maryland_zcta)
 
 The column we're interested in, ZCTA5N, is a <dbl> column - it's a number. We want it to be a <chr> column - text.
 
-**Task** Run the following code to change the datatype of ZCTA5N from numeric to character. What's the datatype of ZCTA5N? **Answer**
+**Task** Run the following code to change the datatype of ZCTA5N from numeric to character. What's the datatype of ZCTA5N? 
+**Answer**
+After running the code, the ZCTA5N column's datatype is now a character-type.
 
 ```{r}
 maryland_zcta <- maryland_zcta |> mutate(ZCTA5N = as.character(ZCTA5N))
+
+maryland_zcta
 ```
 
 Now we can join this dataframe to other zip code data where the zip code column is text, not numbers.
