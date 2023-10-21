@@ -68,7 +68,8 @@ combined_bmore911_zcta <- clean_baltimore_911 |>
 
 Q1. Let's start with our data from Allegany, Cecil and Carroll counties. Write code to generate a dataframe that shows the total number of calls for each county. What's the order of counties from most calls to least?
 
-A1. The order of counties from most calls to least is as follows: Carroll (448 calls), Cecil (438 calls) and Allegany (418 calls).
+A1. 
+The order of counties from most calls to least is as follows: Carroll (448 calls), Cecil (438 calls) and Allegany (418 calls).
 
 ```{r}
 combined_county_911_totals <- county_911_combined |>
@@ -82,14 +83,29 @@ Q2. In your combined dataframe that you used in A1, add a column for the month o
 Then calculate the most calls per county and location. Which location had the most calls - where and what is that location?
 
 A2.
+I can't confidently say that there are any outliers in the data. However, Cecil County in August led all other counties with 55 calls. The only trend I noticed was that the warmer months typically had more calls. 
+
+As for the second question, the county and location with the most calls was 314 GROVE NECK RD EARLEVILLE, MD in Cecil County with 15 calls. After looking up the address, it is apparently a rehabilitation center for the Recovery Centers of America.
 
 ```{r}
-combined_county_911_totals |>
- mutate(month = date())
+county_911_combined <- county_911_combined |>
+ mutate(call_month = month(date, label = TRUE))
+```
 
-
+```{r}
+county_911_combined |>
+  group_by(county, call_month) |>
+   summarise(count = n()) |>
+  arrange(desc(count))
+```
+```{r}
+county_911_combined |>
+  group_by(county, location) |>
+   summarise(count = n()) |>
+  arrange(desc(count))
 
 ```
+
 
 Q3. Let's turn to the Baltimore City data. You're interested in exploring calls in zip codes with a high percentage of children under 18. Write code to isolate calls in zip codes where the percentage of under 18 population is at least 75% and then show the zip code and population and how many calls occurred in each of those zip codes. 
 
@@ -100,17 +116,28 @@ Add a column to your code that calculates the number of calls per 1,000 people f
 Which zip code has the highest rate of calls per 1,000 people? Find the neighborhoods in that zip code that are listed in the data - you can use group_by or distinct to do this. What are some of those neighborhoods, and what else can you tell me about the population there?
 
 A3. 
+21217 was the zip code that returned the highest number of calls in an area with a high percentage of children under 18. That area is near Penn North and encompasses a number of neighborhoods, as well as the Baltimore Zoo. The next highest zip codes were 21223, 21202, 21213, 21201, 21216 and 21205.
+
+For the calls per capita, zip code 21217 also had the highest rate. Some of the neighborhoods in that area are Penn North, Harlem Park, Bolton Hill, Reservoir Hill and Druid Heights. These are predominantly Black neighborhoods with a population percentage under_18 of 81.5%.
 
 ```{r}
-
-
-
-
+combined_bmore911_zcta |>
+  filter(pct_under_18 >= 75) |>
+  group_by(zip_code, population) |>
+    summarise(count = n()) |>
+    mutate(per_cap = count/population*1000) |>
+  arrange(desc(count))
 ```
 
 Q4. Choose your own adventure: I want you to come up with a question you could ask of the Baltimore City data that combines both the calls and the demographic information. You must use both demographics and the overdose call data in your work.
 
-A4: 
+A4: Which zip codes have the largest Hispanic populations and the highest rate of calls per capita per 1000 people?  
+The code provided 32 zip codes. The zip code with the largest Hispanic population is 21224 at 18.5% 5.16 calls per capita per 1000.
 
 ```{r}
+combined_bmore911_zcta |>
+  group_by(zip_code, population, pct_hispanic) |>
+    summarise(count = n()) |>
+    mutate(per_cap = count/population*1000) |>
+  arrange(desc(pct_hispanic), desc(count))
 ```
