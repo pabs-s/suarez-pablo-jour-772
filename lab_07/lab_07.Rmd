@@ -30,6 +30,8 @@ library(refinr)
 library(lubridate)
 library(dplyr)
 library(tidycensus)
+library(zctaCrosswalk)
+library(mapview)
 ```
 
 ## Setup Census API
@@ -93,6 +95,17 @@ acs5_median |>
 Which zip code has the highest rate of calls? Which has the lowest?
 
 **A3** 
+Highest rate of calls is in zip code 20877. Lowest rate of calls is in 20889.
+
+Could not complete step 4 because as of 2020, the Census data API does not allow us to return data by zcta for states and counties.
+
+That code would have looked like: 
+```{r}
+get_acs(geography = "zcta",
+  variables = "B99187_005",
+  state = "MD",
+  year = 2021)
+```
 
 ```{r}
 moco_911_zips <- montgomery_2022_overdoses |>
@@ -102,22 +115,42 @@ moco_911_zips <- montgomery_2022_overdoses |>
 ```
 
 ```{r}
+all_zctas = get_acs(
+  geography = "zcta",
+  variables = c(adults_pop = "B99187_005"),
+  year = 2021)
+```
 
-B99187_005
+```{r}
+all_zcta_moco <- all_zctas |> 
+  filter (GEOID %in% moco_911_zips$zip)
+```
 
-
+```{r}
+moco_911_zips_2 <- merge(moco_911_zips, all_zcta_moco, by.x = "zip", by.y = "GEOID") |>
+  select(-NAME, -variable) |>
+  rename("adult_pop" = "estimate") |>
+  mutate(per_cap = count/adult_pop*1000) |>
+  arrange(desc(per_cap))
 
 ```
 
-
 **Q4** Using [CensusReporter.org](https://censusreporter.org/), examine the zip codes with the highest and lowest rates and compare and contrast their demographic profiles. Is there a story here?
 
-**A4** 
+**A4**
+There were no calls in zip code 20889, but that sort of makes sense because the area holds the Walter Reed Medical Center. That alone skews the demographic data, but the results given that are unsurprising. To me, there is no story here.
 
 **Q5** Go back to your joined dataframe from Q3 and add two more columns representing the minimum and maximum populations based on the estimate and margin of error, then calculate per capita rates for each. Do you get the same two zip codes for the highest and lowest as you did before? Does that give you more or less confidence in your answers to Q3?
 
 **A5** 
+Margin of error was not provided in the API poll. However, the code below is what I would have done if I had access to that data.
 
 ```{r}
+moco_911_zips_2 |>
+  mutate(low = adult_pop - moe, high = adult_pop + moe) |>
+  mutate(low_per_cap = count/low*1000, high_per_cap = count/high*1000)
 ```
+
+
+
 
