@@ -32,7 +32,9 @@ The dataset we'll use is 911 overdose calls from Baltimore County. Let's load it
 
 ### Task 2: Load data
 
-**Task** Run the following code to load the data. In the space below, indicate how many rows and columns it has. **Answer**
+**Task** Run the following code to load the data. In the space below, indicate how many rows and columns it has. 
+**Answer**
+the baltco_911_calls dataframe has 3822 rows and four columns.
 
 ```{r}
 baltco_911_calls <- read_csv("data/baltco_911_calls.csv")
@@ -52,7 +54,9 @@ First, we'll add a month column to our dataframe using lubridate.
 
 ### Task 3: Add a month column to our 911 calls dataframe using lubridate and calculate the number of calls for each month
 
-**Task** Run the following code to add a month column to our dataframe using lubridate and count the number of calls for each month. In the space below, explain what each step of the code below is doing in English. Note the "label=TRUE" part in the mutate statement. **Answer**
+**Task** Run the following code to add a month column to our dataframe using lubridate and count the number of calls for each month. In the space below, explain what each step of the code below is doing in English. Note the "label=TRUE" part in the mutate statement. 
+**Answer**
+The first line is creating a new dataframe from the original baltco dataframe. Then it's mutating to create a new column called 'month' based on the original 'date' column. The "label=TRUE" part of that line is matching the month number to the corresponding month name, i.e. 1 = January. Then the code is grouping the data by our new month column, summarizing the total number of calls in those months and then arranging the total calls in descending order.
 
 ```{r}
 baltco_911_calls_by_month <- baltco_911_calls |>
@@ -70,7 +74,9 @@ With ggplot, the first thing we'll always do is draw a blank canvas that will co
 
 ### Task 4: Create an empty ggplot container
 
-**Task** Run the following code. Explain what you see after running the code in the space below. **Answer**
+**Task** Run the following code. Explain what you see after running the code in the space below. 
+**Answer**
+I see a white box.
 
 ```{r}
 baltco_911_calls_by_month |>
@@ -101,7 +107,9 @@ After we've invoked the ggplot() function, you'll notice we're using a + symbol.
 
 ### Task 5: Run the following code
 
-**Task** Run the following code. Explain what you see after running the code in the space below. **Answer**
+**Task** Run the following code. Explain what you see after running the code in the space below. 
+**Answer**
+I see a bar chart with columns by month (x-axis) and a y-axis of the count that we found in task 3. 
 
 ```{r}
 baltco_911_calls_by_month |>
@@ -113,7 +121,9 @@ This is a very basic chart. But it's hard to derive much meaning from this chart
 
 ### Task 6: Run the following code
 
-**Task** Run the following code. Explain what you see after running the code in the space below. What has changed from the last codeblock? **Answer**
+**Task** Run the following code. Explain what you see after running the code in the space below. What has changed from the last codeblock? 
+**Answer**
+The bar chart has been rearranged to show total calls in ascending order from left to right. I'm also noticing, starting from the last codeblock, that we're using a plus sign instead of a pipe.
 
 ```{r}
 baltco_911_calls_by_month |>
@@ -125,7 +135,9 @@ This is a little more useful. But the bottom is kind of a mess, with overlapping
 
 ### Task 7: Run the following code
 
-**Task** Run the following code. Explain what you see after running the code in the space below. What has changed from the last codeblock? **Answer**
+**Task** Run the following code. Explain what you see after running the code in the space below. What has changed from the last codeblock? 
+**Answer**
+The bar chart has been flipped from vertical to horizontal with the highest values starting at the top. This codeblock used the coord_flip function to do this.
 
 ```{r}
 baltco_911_calls_by_month |>
@@ -144,7 +156,9 @@ It's kind of like applying CSS to html. Here I'm changing the theme slightly to 
 
 ### Task 8: Run the following code
 
-**Task** Run the following code. Explain what you see after running the code in the space below. What has changed from the last codeblock? **Answer**
+**Task** Run the following code. Explain what you see after running the code in the space below. What has changed from the last codeblock? 
+**Answer**
+I see a similar bar chart from the previous task. However, this one has a more transparent background grid. We've incorporated the theme_minimal function to make that change.
 
 ```{r}
 baltco_911_calls_by_month |>
@@ -171,7 +185,9 @@ And now we'll apply the economist theme from that package with theme_economist()
 
 ### Task 10: Run the following code
 
-**Task** Run the following code. Explain what you see after running the code in the space below. What has changed from the last version of the chart? **Answer**
+**Task** Run the following code. Explain what you see after running the code in the space below. What has changed from the last version of the chart? 
+**Answer**
+I see a new version of the same horizontal bar chart, and the axis labels now seem a little more crowded. This one has a different background. It has a grayish-blue hue and white horizontal lines underneath each bar, as opposed to a background grid. 
 
 ```{r}
 baltco_911_calls_by_month |>
@@ -185,7 +201,9 @@ Those axis titles are kind of a mess. Let's change "count" on the x axis to "tot
 
 ### Task 11: Run the following code
 
-**Task** Run the following code. Explain what you see after running the code in the space below. What has changed from the last codeblock? **Answer**
+**Task** Run the following code. Explain what you see after running the code in the space below. What has changed from the last codeblock? 
+**Answer**
+We've now added a title to our bar chart, cleaned up the axis labels by labeling them in the code and provided a source for our data through the caption portion of the labs function.
 
 ```{r}
 baltco_911_calls_by_month |>
@@ -214,7 +232,9 @@ So, let's use the same Baltimore County data and generate a count of contributio
 
 ### Task 12: Create a dataframe of 911 calls by date
 
-**Task** Run the following code. Explain what you see after running the code in the space below. **Answer**
+**Task** Run the following code. Explain what you see after running the code in the space below. 
+**Answer**
+It's a new dataframe counting the Baltimore County calls by date (year, month, day)
 
 ```{r}
 baltco_911_calls_by_date <- baltco_911_calls |>
@@ -232,7 +252,9 @@ We'll put the date on the x axis and total contributions on the y axis.
 
 ### Task 13: Run the following code
 
-**Task** Run the following code. Explain what you see after running the code in the space below. **Answer**
+**Task** Run the following code. Explain what you see after running the code in the space below. 
+**Answer**
+I see a line chart using the previous task's data. The x-axis is the date, while the y-axis is the total number of calls. 
 
 ```{r}
 baltco_911_calls_by_date |>
@@ -250,7 +272,9 @@ We'll set the date_breaks to appear for every week; if we wanted every month, we
 
 ### Task 14: Run the following code
 
-**Task** Run the following code. Explain what you see after running the code in the space below. **Answer**
+**Task** Run the following code. Explain what you see after running the code in the space below. 
+**Answer**
+We've added more individual points on the x-axis with the scaling function. The result of this action has overcrowded the names along the x-axis.
 
 ```{r}
 baltco_911_calls_by_date |>
@@ -263,7 +287,9 @@ Those are a little hard to read, so we can turn them 45 degrees to remove the ov
 
 ### Task 15: Run the following code
 
-**Task** Run the following code. Explain what you see after running the code in the space below. **Answer**
+**Task** Run the following code. Explain what you see after running the code in the space below. 
+**Answer**
+The x-axis text has now been tilted at a 45 degree angle. It's significantly easier to read it.
 
 ```{r}
 baltco_911_calls_by_date |>
