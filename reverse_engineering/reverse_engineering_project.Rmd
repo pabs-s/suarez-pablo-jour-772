@@ -4,13 +4,16 @@ author: "Pablo Suarez & Mikayla Roberts"
 date: "2023-10-03"
 output: html_notebook
 ---
+
 We started by loading our libraries and settings in the notebook
+
 ```{r}
 #load libraries and settings
 library(tidyverse)
 library(janitor)
 library(dplyr)
 ```
+
 We then imported our data set into RStudio.
 
 ```{r}
@@ -19,7 +22,9 @@ sports_political_donations <- read_csv("data/sports-political-donations - sports
 
 sports_political_donations
 ```
+
 Then we cleaned the data set so that all the column names were uniform, the 'recipient' names were all upper case, and the 'amount' column was a number set rather than a character set.
+
 ```{r}
 clean_sports_pol_donations <- sports_political_donations |>
   clean_names() |>
@@ -27,8 +32,9 @@ clean_sports_pol_donations <- sports_political_donations |>
 
 clean_sports_pol_donations
 ```
-Which team owners gave the most?
-We need to single out donations from team owners by cycle and party donated to. We were able to almost completely replicate the data presented however, we were unable to trouble-shoot the 'election_cycle' column.
+
+Which team owners gave the most? We need to single out donations from team owners by cycle and party donated to. We were able to almost completely replicate the data presented however, we were unable to trouble-shoot the 'election_cycle' column.
+
 ```{r}
 clean_sports_pol_donations |>
   group_by(owner, team, league, party) |>
@@ -36,8 +42,7 @@ clean_sports_pol_donations |>
   arrange(desc(total_amount))
 ```
 
-"Significantly more money goes to Republicans: Specifically partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, per election cycle"
-For this chart, we will need to group contributions by election year, and then create columns for each year that break down donations by party and then also show the total amount donated that year. This can be achieved by making separate dataframes for each party's donations and then merging the dataframes.
+"Significantly more money goes to Republicans: Specifically partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, per election cycle" For this chart, we will need to group contributions by election year, and then create columns for each year that break down donations by party and then also show the total amount donated that year. This can be achieved by making separate dataframes for each party's donations and then merging the dataframes.
 
 ```{r}
 rep_df <- clean_sports_pol_donations |>
@@ -49,6 +54,7 @@ rep_df <- clean_sports_pol_donations |>
 rep_df_clean = subset(rep_df, select = -c(party))
 
 ```
+
 ```{r}
 dem_df <- clean_sports_pol_donations |>
   group_by(election_year, party) |>
@@ -69,6 +75,7 @@ rep_df_clean <- rep_df_clean |>
 dem_df_clean <- dem_df_clean |>
   rename("to_democrats" = "total_amount")
 ```
+
 ```{r}
 year_party_donations <- merge(rep_df_clean, dem_df_clean, by = "election_year")
 
@@ -81,8 +88,7 @@ year_party_donations |>
   arrange(desc(election_year))
 ```
 
-MLB owners have donated the most
-Specifically partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, by party, 2016-20
+MLB owners have donated the most Specifically partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, by party, 2016-20
 
 ```{r}
 mlb_republican <- clean_sports_pol_donations |>
@@ -90,90 +96,61 @@ mlb_republican <- clean_sports_pol_donations |>
   filter(party == "Republican" & str_detect(league, "MLB")) |>
   summarise(total = sum(amount))
 
-  #summarise(MLB_rep = case_when(str_detect(league,'MLB') ~ sum(amount)))
- 
-```
-
-```{r}
-  sum(mlb_republican$total)
-```
-```{r}
 mlb_democrat <- clean_sports_pol_donations |>
   group_by(party, league) |>
   filter(party == "Democrat" & str_detect(league, "MLB")) |>
   summarise(total = sum(amount))
-```
-```{r}
+
 nba_republican <- clean_sports_pol_donations |>
   group_by(party, league) |>
    filter(party == "Republican" & str_detect(league, "NBA") & league != "WNBA") |>
   summarise(total = sum(amount))
 
-#& league != "MLB, WNBA" & league != "WNBA")
-
-```
-
-```{r}
 nba_democrat <- clean_sports_pol_donations |>
   group_by(party, league) |>
   filter(party == "Democrat" & str_detect(league, "NBA") & league != "MLB, WNBA" & league != "WNBA") |>
   summarise(total = sum(amount))
-```
 
-```{r}
 nhl_republican <- clean_sports_pol_donations |>
   group_by(party, league) |>
   filter(party == "Republican" & str_detect(league, "NHL")) |>
   summarise(total = sum(amount))
-```
 
-```{r}
 nhl_democrat <- clean_sports_pol_donations |>
   group_by(party, league) |>
   filter(party == "Democrat" & str_detect(league, "NHL")) |>
   summarise(total = sum(amount))
-```
 
-```{r}
 nfl_republican <- clean_sports_pol_donations |>
   group_by(party, league) |>
   filter(party == "Republican" & str_detect(league, "NFL")) |>
   summarise(total = sum(amount))
-```
 
-```{r}
 nfl_democrat <- clean_sports_pol_donations |>
   group_by(party, league) |>
   filter(party == "Democrat" & str_detect(league, "NFL")) |>
   summarise(total = sum(amount))
-```
 
-```{r}
 wnba_republican <- clean_sports_pol_donations |>
   group_by(party, league) |>
   filter(party == "Republican" & str_detect(league, "WNBA")) |>
   summarise(total = sum(amount))
-```
 
-```{r}
 wnba_democrat <- clean_sports_pol_donations |>
   group_by(party, league) |>
   filter(party == "Democrat" & str_detect(league, "WNBA")) |>
   summarise(total = sum(amount))
-```
 
-```{r}
 nascar_republican <- clean_sports_pol_donations |>
   group_by(party, league) |>
   filter(party == "Republican" & str_detect(league, "NASCAR")) |>
   summarise(total = sum(amount))
-```
 
-```{r}
 nascar_democrat <- clean_sports_pol_donations |>
   group_by(party, league) |>
   filter(party == "Democrat" & str_detect(league, "NASCAR")) |>
   summarise(total = sum(amount))
+
 ```
 
 ```{r}
@@ -188,42 +165,53 @@ league_donations <- league_donations |>
   mutate(total = to_republicans + to_democrats)
 ```
 
+"Drilling down deeper into the data, we can see that federal contributions in each league lean red, except for in the WNBA: Across leagues, a majority of donations go to Republicans (Share of donations from team owners in six leagues, per year, by league and party).Donations may not sum to 100 percent due to bipartisan donations."
 
-Story Text/Reverse Engineering: Drilling down deeper into the data, we can see that federal contributions in each league lean red, except for in the WNBA: Across leagues, a majority of donations go to Republicans (Share of donations from team owners in six leagues, per year, by league and party).Donations may not sum to 100 percent due to bipartisan donations.
+***Our first step in recreating the stacked bar charts consists of creating six dataframes for the different leagues which display the total contributions by year and party. Before we do that, we're changing the election_year column to a character format so that it will help organize the bar chart columns later on.***
 
-Our first step in recreating the stacked bar charts consists of creating six dataframes for the different leagues which display the total contributions by year and party. 
+***To find the contributions by league, year and party, we're going to create the dataframe and then group the data by election year and party. Then we're filtering to specifically target the league we're making the dataframe for, as well as just Republicans and Democrats. We're not interested in donations that are "Bipartisan" because they are not accounted for in the bar charts. The code will be the same for each league except for the NBA because we encountered issues with the WNBA's name when we filtered. The last step in this code block is to summarise with the total equaling the sum of the amounts from the results of the filters.***
+
+***Below is what all of this code looks like:***
+
+```{r}
+clean_sports_pol_donations$election_year <- as.character(clean_sports_pol_donations$election_year)
+```
 
 ```{r}
 mlb_contributions <- clean_sports_pol_donations |>
-  group_by(league, election_year, party) |>
-  filter(league == "MLB" & (party == "Republican" | party == "Democrat")) |>
+  group_by(election_year, party) |>
+   filter(str_detect(league, "MLB") & (party == "Republican" | party == "Democrat")) |>
   summarise(total = sum(amount))
 
 nascar_contributions <- clean_sports_pol_donations |>
-  group_by(league, election_year, party) |>
-  filter(league == "NASCAR" & (party == "Republican" | party == "Democrat")) |>
+  group_by(election_year, party) |>
+   filter(str_detect(league, "NASCAR") & (party == "Republican" | party == "Democrat")) |>
   summarise(total = sum(amount))
 
 nba_contributions <- clean_sports_pol_donations |>
-  group_by(league, election_year, party) |>
+  group_by(election_year, party) |>
   filter(str_detect(league, "NBA") & league != "MLB, WNBA" & league != "WNBA" & (party == "Republican" | party == "Democrat")) |> 
   summarise(total = sum(amount))
 
 nfl_contributions <- clean_sports_pol_donations |>
-  group_by(league, election_year, party) |>
-  filter(league == "NFL" & (party == "Republican" | party == "Democrat")) |>
+  group_by(election_year, party) |>
+   filter(str_detect(league, "NFL") & (party == "Republican" | party == "Democrat")) |>
   summarise(total = sum(amount))
 
 nhl_contributions <- clean_sports_pol_donations |>
-  group_by(league, election_year, party) |>
-  filter(league == "NHL" & (party == "Republican" | party == "Democrat")) |>
+  group_by(election_year, party) |>
+   filter(str_detect(league, "NHL") & (party == "Republican" | party == "Democrat")) |>
   summarise(total = sum(amount))
 
 wnba_contributions <- clean_sports_pol_donations |>
-  group_by(league, election_year, party) |>
-  filter(league == "WNBA" & (party == "Republican" | party == "Democrat")) |>
+  group_by(election_year, party) |>
+   filter(str_detect(league, "WNBA") & (party == "Republican" | party == "Democrat")) |>
   summarise(total = sum(amount))
 ```
+
+***Now that we have our individual dataframes for each league, we need to then create six more dataframes for each league with the total amount of donations for each election year. We're going to group our data by election year, party and league. Then we'll filter and string detect like we did in the previous codeblock. We'll summarise with the total equaling the sum of all donations that include each specific league. We'll take those results and group them by election year and calculate the total amount donated per election year.***
+
+***Here is that code:***
 
 ```{r}
 yearly_total_mlb <- clean_sports_pol_donations |>
@@ -242,7 +230,7 @@ yearly_total_nascar <- clean_sports_pol_donations |>
 
 yearly_total_nba <- clean_sports_pol_donations |>
   group_by(election_year, party, league) |>
-  filter(str_detect(league, "NBA") & league != "MLB, WNBA" & league != "WNBA" & (party == "Republican" | party == "Democrat")) |>
+  filter(str_detect(league, "NBA") & league != "MLB, WNBA" & league != "WNBA") |>
   summarise(total = sum(amount)) |>
   group_by(election_year) |>
   summarise(yearly_total = sum(total))
@@ -270,6 +258,9 @@ yearly_total_wnba <- clean_sports_pol_donations |>
 
 ```
 
+***In this next step, we're merging the two dataframes we've made for each league by election year and then mutating to add a column calculating the percentage distribution of political donations by party. To calculate those percentages, we're dividing the total number of donations by party from the combined total of all donations made in a specific election year.***
+
+***Here is that code:***
 
 ```{r}
 mlb_percents <- merge(mlb_contributions, yearly_total_mlb, by = "election_year") |>
@@ -284,31 +275,50 @@ mutate (percents = total/yearly_total*100)
 nfl_percents <- merge(nfl_contributions, yearly_total_nfl, by = "election_year") |>
 mutate (percents = total/yearly_total*100)
 
-nhl_percents <- merge(mlb_contributions, yearly_total_nhl, by = "election_year") |>
+nhl_percents <- merge(nhl_contributions, yearly_total_nhl, by = "election_year") |>
 mutate (percents = total/yearly_total*100)
 
-wnba_percents <- merge(mlb_contributions, yearly_total_wnba, by = "election_year") |>
+wnba_percents <- merge(wnba_contributions, yearly_total_wnba, by = "election_year") |>
 mutate (percents = total/yearly_total*100)
 
 ```
 
+***Now that we've calculated our percentages, we'll use the ggplot function to create stacked bar charts for each league that visualize the donation breakdown. Our x-axis represents election years and our y-axis represents the percentage of donations contributed. The position portion of the second line of code enables us to create a stacked bar chart. The stat = identity portion means that the heights of each bar represent values of the percentages in our data. We'll then assign the correct colors for each party with scale_fill_manual and then review our stacked bar charts to see that they match what's shown in the article.***
+
+***Here is the final product:***
 
 ```{r}
-
-
-
-
-
-
-
+ggplot(mlb_percents, aes(fill=party, y=percents, x=election_year)) + 
+    geom_bar(position="stack", stat="identity") +
+    scale_fill_manual(values=c('blue', 'red'))
 ```
 
+```{r}
+ggplot(nascar_percents, aes(fill=party, y=percents, x=election_year)) + 
+    geom_bar(position="stack", stat="identity") +
+    scale_fill_manual(values=c('blue', 'red'))
+```
 
+```{r}
+ggplot(nba_percents, aes(fill=party, y=percents, x=election_year)) + 
+    geom_bar(position="stack", stat="identity") +
+    scale_fill_manual(values=c('blue', 'red'))
+```
 
+```{r}
+ggplot(nfl_percents, aes(fill=party, y=percents, x=election_year)) + 
+    geom_bar(position="stack", stat="identity") +
+    scale_fill_manual(values=c('blue', 'red'))
+```
 
+```{r}
+ggplot(nhl_percents, aes(fill=party, y=percents, x=election_year)) + 
+    geom_bar(position="stack", stat="identity") +
+    scale_fill_manual(values=c('blue', 'red'))
+```
 
-
-
-
-
-
+```{r}
+ggplot(wnba_percents, aes(fill=party, y=percents, x=election_year)) + 
+    geom_bar(position="stack", stat="identity") +
+    scale_fill_manual(values=c('blue', 'red'))
+```
