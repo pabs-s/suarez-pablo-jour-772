@@ -189,5 +189,126 @@ league_donations <- league_donations |>
 ```
 
 
+Story Text/Reverse Engineering: Drilling down deeper into the data, we can see that federal contributions in each league lean red, except for in the WNBA: Across leagues, a majority of donations go to Republicans (Share of donations from team owners in six leagues, per year, by league and party).Donations may not sum to 100 percent due to bipartisan donations.
+
+Our first step in recreating the stacked bar charts consists of creating six dataframes for the different leagues which display the total contributions by year and party. 
+
+```{r}
+mlb_contributions <- clean_sports_pol_donations |>
+  group_by(league, election_year, party) |>
+  filter(league == "MLB" & (party == "Republican" | party == "Democrat")) |>
+  summarise(total = sum(amount))
+
+nascar_contributions <- clean_sports_pol_donations |>
+  group_by(league, election_year, party) |>
+  filter(league == "NASCAR" & (party == "Republican" | party == "Democrat")) |>
+  summarise(total = sum(amount))
+
+nba_contributions <- clean_sports_pol_donations |>
+  group_by(league, election_year, party) |>
+  filter(str_detect(league, "NBA") & league != "MLB, WNBA" & league != "WNBA" & (party == "Republican" | party == "Democrat")) |> 
+  summarise(total = sum(amount))
+
+nfl_contributions <- clean_sports_pol_donations |>
+  group_by(league, election_year, party) |>
+  filter(league == "NFL" & (party == "Republican" | party == "Democrat")) |>
+  summarise(total = sum(amount))
+
+nhl_contributions <- clean_sports_pol_donations |>
+  group_by(league, election_year, party) |>
+  filter(league == "NHL" & (party == "Republican" | party == "Democrat")) |>
+  summarise(total = sum(amount))
+
+wnba_contributions <- clean_sports_pol_donations |>
+  group_by(league, election_year, party) |>
+  filter(league == "WNBA" & (party == "Republican" | party == "Democrat")) |>
+  summarise(total = sum(amount))
+```
+
+```{r}
+yearly_total_mlb <- clean_sports_pol_donations |>
+  group_by(election_year, party, league) |>
+  filter(str_detect(league, "MLB")) |>
+  summarise(total = sum(amount)) |>
+  group_by(election_year) |>
+  summarise(yearly_total = sum(total))
+
+yearly_total_nascar <- clean_sports_pol_donations |>
+  group_by(election_year, party, league) |>
+  filter(str_detect(league, "NASCAR")) |>
+  summarise(total = sum(amount)) |>
+  group_by(election_year) |>
+  summarise(yearly_total = sum(total))
+
+yearly_total_nba <- clean_sports_pol_donations |>
+  group_by(election_year, party, league) |>
+  filter(str_detect(league, "NBA") & league != "MLB, WNBA" & league != "WNBA" & (party == "Republican" | party == "Democrat")) |>
+  summarise(total = sum(amount)) |>
+  group_by(election_year) |>
+  summarise(yearly_total = sum(total))
+
+yearly_total_nfl <- clean_sports_pol_donations |>
+  group_by(election_year, party, league) |>
+  filter(str_detect(league, "NFL")) |>
+  summarise(total = sum(amount)) |>
+  group_by(election_year) |>
+  summarise(yearly_total = sum(total))
+
+yearly_total_nhl <- clean_sports_pol_donations |>
+  group_by(election_year, party, league) |>
+  filter(str_detect(league, "NHL")) |>
+  summarise(total = sum(amount)) |>
+  group_by(election_year) |>
+  summarise(yearly_total = sum(total))
+
+yearly_total_wnba <- clean_sports_pol_donations |>
+  group_by(election_year, party, league) |>
+  filter(str_detect(league, "WNBA")) |>
+  summarise(total = sum(amount)) |>
+  group_by(election_year) |>
+  summarise(yearly_total = sum(total))
+
+```
+
+
+```{r}
+mlb_percents <- merge(mlb_contributions, yearly_total_mlb, by = "election_year") |>
+mutate (percents = total/yearly_total*100)
+
+nascar_percents <- merge(nascar_contributions, yearly_total_nascar, by = "election_year") |>
+mutate (percents = total/yearly_total*100)
+
+nba_percents <- merge(nba_contributions, yearly_total_nba, by = "election_year") |>
+mutate (percents = total/yearly_total*100)
+
+nfl_percents <- merge(nfl_contributions, yearly_total_nfl, by = "election_year") |>
+mutate (percents = total/yearly_total*100)
+
+nhl_percents <- merge(mlb_contributions, yearly_total_nhl, by = "election_year") |>
+mutate (percents = total/yearly_total*100)
+
+wnba_percents <- merge(mlb_contributions, yearly_total_wnba, by = "election_year") |>
+mutate (percents = total/yearly_total*100)
+
+```
+
+
+```{r}
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
 
 
