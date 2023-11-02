@@ -158,7 +158,24 @@ league_donations <- data.frame (league  = c("MLB", "NBA", "NHL", "NFL", "WNBA", 
     to_republicans = c(sum(mlb_republican$total), sum(nba_republican$total), sum(nhl_republican$total), sum(nfl_republican$total), sum(wnba_republican$total), sum(nascar_republican$total)),
     to_democrats = c(sum(mlb_democrat$total), sum(nba_democrat$total), sum(nhl_democrat$total), sum(nfl_democrat$total), sum(wnba_democrat$total), sum(nascar_democrat$total)))
 
+league_donations
 ```
+
+#### RYAN EXAMPLE ####
+
+```{r}
+
+clean_sports_pol_donations |>
+  group_by(league, party) |>
+  summarise(amount = sum(amount)) |>
+  pivot_wider(names_from = party, values_from = amount)
+
+clean_sports_pol_donations |>
+
+```
+
+####
+
 
 ```{r}
 league_donations <- league_donations |>

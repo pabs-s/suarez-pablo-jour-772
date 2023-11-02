@@ -12,8 +12,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Load libraries and establish settings
 
 **Task** Create a codeblock and load appropriate packages and settings for this lab. We'll be making some charts, working with dates and retrieving Census data.
-
-
+```{r}
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(dplyr)
+library(ggthemes)
+```
 ## Load and modify data
 
 **Task** Create a codeblock and load the following data from the data folder:
@@ -22,7 +27,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 You will need to create columns for the date, week and month based on the existing `datetime` column.
 
-
+```{r}
+prince_georges_2022_overdoses <- read_csv("data/prince_georges_2022_overdoses.csv")
+prince_georges_2022_overdoses$datetime <- as_date(prince_georges_2022_overdoses$datetime)
+prince_georges_2022_overdoses$Year <- year(prince_georges_2022_overdoses$datetime)
+prince_georges_2022_overdoses$Month <- month(prince_georges_2022_overdoses$datetime, label=TRUE)
+prince_georges_2022_overdoses$Week <- week(prince_georges_2022_overdoses$datetime)
+prince_georges_2022_overdoses <- prince_georges_2022_overdoses |>
+  clean_names()
+```
 
 ## Questions 
 
@@ -35,8 +48,30 @@ You will need to create columns for the date, week and month based on the existi
 Compare the results here to those from the pre_lab_08 bar chart - are there major differences in the months with the highest and lowest figures? Describe that below.
 
 **A1.** 
+December narrowly led the way with roughly 10% of the calls for the year. In comparison to the Baltimore County bar chart from the pre lab, my bar chart differs with the highest months (December, July, November, September vs. August, May, March, April). In both, February was slotted very low, but my lowest month was January. Overall, the distributions for each bar chart are pretty similar. However, it's worth noting that my chart is measured in percentages, while the pre lab chart is total calls.
 
 ```{r}
+
+pg_2022_odcalls_by_month <- 
+  prince_georges_2022_overdoses |>
+  group_by(month) |>
+  summarise(count = n()) |>
+  mutate(year_total = sum(count)) |>
+  mutate(percents = count/year_total*100) |>
+  arrange(desc(percents)) 
+  
+```
+
+```{r}
+pg_2022_odcalls_by_month |>
+ggplot() +
+  geom_bar(aes(x=reorder(month, count), weight=percents)) +
+  labs(
+    title="More Calls in Months with Major Holidays",
+    x = "Month",
+    y = "Percentage of Calls for the Year",
+    caption = "Source: Prince George's County EMS")
+
 ```
 
 **Q2.** Let's visualize this data on a weekly basis using a line chart. As in Q1, generate a dataframe with the total number of calls for each week, and then create a line chart to show the distribution of calls over time. Your line chart must have:
@@ -51,6 +86,33 @@ Describe the pattern of results; you may want to look at the data to dig into pa
 
 
 ```{r}
+
+pg_2022_odcalls_by_week <- prince_georges_2022_overdoses |>
+  group_by(week) |>
+  summarise(total_calls = n()) |>
+  arrange(desc(total_calls))
+
+```
+
+```{r}
+
+pg_2022_odcalls_by_week |>
+glimpse()
+
+```
+
+```{r}
+
+pg_2022_odcalls_by_week |>
+ggplot() + 
+  geom_line(aes(x=week, y=total_calls)) + 
+  labs(
+    title="More Calls in Months with Major Holidays",
+    x = "Week",
+    y = "Total Calls",
+    caption = "Source: Prince George's County EMS") +
+  scale_x_date(date_breaks = "1 week", date_labels = "%b %d")
+
 ```
 
 **Q3.**  A scatterplot is a type of chart that helps us see relationships between two variables. One variable goes on the x axis, the other on the y axis.  For each row/observation in our data, a scatterplot puts a circle (or a "point") where the two variables intersect on a grid. 
