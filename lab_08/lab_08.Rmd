@@ -13,11 +13,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **Task** Create a codeblock and load appropriate packages and settings for this lab. We'll be making some charts, working with dates and retrieving Census data.
 ```{r}
+options(scipen=999)
 library(tidyverse)
 library(lubridate)
 library(janitor)
 library(dplyr)
 library(ggthemes)
+library(tidycensus)
+library(ggplot2)
 ```
 ## Load and modify data
 
@@ -33,6 +36,7 @@ prince_georges_2022_overdoses$datetime <- as_date(prince_georges_2022_overdoses$
 prince_georges_2022_overdoses$Year <- year(prince_georges_2022_overdoses$datetime)
 prince_georges_2022_overdoses$Month <- month(prince_georges_2022_overdoses$datetime, label=TRUE)
 prince_georges_2022_overdoses$Week <- week(prince_georges_2022_overdoses$datetime)
+prince_georges_2022_overdoses$Week2 <- as.Date(paste(2022,week(prince_georges_2022_overdoses$datetime), 1, sep="-"), "%Y-%U-%u")
 prince_georges_2022_overdoses <- prince_georges_2022_overdoses |>
   clean_names()
 ```
@@ -83,12 +87,17 @@ ggplot() +
 Describe the pattern of results; you may want to look at the data to dig into particular outliers.
 
 **A2.** 
-
+Most of the results fluctuate between 20 to 30 calls with the exception of July 11 and December 26 which are major outliers.
 
 ```{r}
 
 pg_2022_odcalls_by_week <- prince_georges_2022_overdoses |>
   group_by(week) |>
+  summarise(total_calls = n()) |>
+  arrange(desc(total_calls))
+
+pg_2022_odcalls_by_week_2 <- prince_georges_2022_overdoses |>
+  group_by(week2) |>
   summarise(total_calls = n()) |>
   arrange(desc(total_calls))
 
@@ -102,17 +111,21 @@ glimpse()
 ```
 
 ```{r}
-
-pg_2022_odcalls_by_week |>
+pg_2022_odcalls_by_week_2 |>
 ggplot() + 
-  geom_line(aes(x=week, y=total_calls)) + 
+  geom_line(aes(x=week2, y=total_calls)) + 
   labs(
     title="More Calls in Months with Major Holidays",
     x = "Week",
     y = "Total Calls",
-    caption = "Source: Prince George's County EMS") +
-  scale_x_date(date_breaks = "1 week", date_labels = "%b %d")
+    caption = "Source: Prince George's County EMS") |>
+  scale_x_date(date_breaks = "1 week", date_labels = "%b %d") +
+  theme(
+    axis.text.x = element_text(angle = 45,  hjust=1))
+```
 
+```{r}
+as.Date(paste(2022,week(prince_georges_2022_overdoses$datetime), 1, sep="-"), "%Y-%U-%u")
 ```
 
 **Q3.**  A scatterplot is a type of chart that helps us see relationships between two variables. One variable goes on the x axis, the other on the y axis.  For each row/observation in our data, a scatterplot puts a circle (or a "point") where the two variables intersect on a grid. 
@@ -139,5 +152,49 @@ To answer this question, do the following:
 
 **A3.**  
 
-```{r}
+The correlation seems like the less calls there are within a county, the more likely it is that the median income is higher. 
+
+```{r echo=FALSE}
+ Sys.getenv("CENSUS_API_KEY")
 ```
+
+```{r}
+pg_od_total <-
+prince_georges_2022_overdoses |>
+  group_by(zipcode) |>
+  summarise(total_calls = n()) |>
+  arrange(desc(total_calls))
+```
+
+```{r}
+zipcodes <- get_acs(geography = "zcta",
+              variables = c(medincome = "B19326_001"),
+              year = 2021) |>
+  rename(zipcode = "GEOID")
+```
+
+```{r}
+ pg_zip_income <- zipcodes |>
+  inner_join(pg_od_total) |>
+  select(-NAME, -variable) |>
+  rename(medincome = "estimate")
+```
+
+```{r}
+ggplot(pg_zip_income, aes(x=total_calls, y=medincome, label = zipcode)) + 
+  theme(
+    axis.text.x = element_text(angle = 45,  hjust=1)) +
+labs(
+    title="PG 911 Calls by Zip Code and Median Income",
+    x = "Total Number of Calls",
+    y = "Median Income",
+    caption = "Source: U.S. Census Bureau") +
+   geom_text(check_overlap = TRUE)
+```
+
+
+
+
+
+
+
