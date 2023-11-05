@@ -7,7 +7,7 @@ output: html_notebook
 
 ***This is Mikayla Roberts and Pablo Suarez's markdown file to reverse engineer the tables and findings from FiveThirtyEight's story, "Inside The Political Donation History Of Wealthy Sports Owners." Link to the story: <https://fivethirtyeight.com/features/inside-the-political-donation-history-of-wealthy-sports-owners/>***
 
-***For this project, we leveraged a data frame created by the story's reporters (who were not credited) with data from the Federal Election Commission and OpenSecrets -- a research and government transparency organization tracking money in politics. We can assume that the reporters had to do extensive work to clean and merge the data into one main data frame. The story analyzes the political spending of more than 160 owners and commissioners across 125 teams in six different sports leagues in three election cycles from 2016 to 2020.***
+***For this project, we leveraged a data frame created by the story's reporters (who were not credited) with data from the Federal Election Commission and OpenSecrets -- a research and government transparency organization tracking money in politics. We can assume that the reporters had to do extensive work to clean and merge the data into one main data frame. The story analyzes the political spending of more than 160 owners and commissioners across 125 teams in six different sports leagues over three election cycles from 2016 to 2020.***
 
 ***The reporters identified the highest spending owners by party, the leagues responsible for driving the most spending, the distribution of spending within leagues and total spending by election year, among other findings. This information was primarily communicated visually through tables and stacked bar charts.***
 
