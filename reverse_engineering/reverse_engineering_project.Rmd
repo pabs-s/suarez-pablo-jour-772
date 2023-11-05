@@ -5,7 +5,15 @@ date: "2023-10-03"
 output: html_notebook
 ---
 
-We started by loading our libraries and settings in the notebook
+***This is Mikayla Roberts and Pablo Suarez's markdown file to reverse engineer the tables and findings from FiveThirtyEight's story, "Inside The Political Donation History Of Wealthy Sports Owners." Link to the story: <https://fivethirtyeight.com/features/inside-the-political-donation-history-of-wealthy-sports-owners/>***
+
+***For this project, we leveraged a data frame created by the story's reporters (who were not credited) with data from the Federal Election Commission and OpenSecrets -- a research and government transparency organization tracking money in politics. We can assume that the reporters had to do extensive work to clean and merge the data into one main data frame. The story analyzes the political spending of more than 160 owners and commissioners across 125 teams in six different sports leagues in three election cycles from 2016 to 2020.***
+
+***The reporters identified the highest spending owners by party, the leagues responsible for driving the most spending, the distribution of spending within leagues and total spending by election year, among other findings. This information was primarily communicated visually through tables and stacked bar charts.***
+
+***Below are our code blocks attempting to replicate the story's findings:***
+
+***We began by loading our libraries and settings in the notebook.***
 
 ```{r}
 #load libraries and settings
@@ -14,7 +22,7 @@ library(janitor)
 library(dplyr)
 ```
 
-We then imported our data set into RStudio.
+***We then imported our data set into RStudio.***
 
 ```{r}
 #load data set
@@ -23,7 +31,7 @@ sports_political_donations <- read_csv("data/sports-political-donations - sports
 sports_political_donations
 ```
 
-Then we cleaned the data set so that all the column names were uniform, the 'recipient' names were all upper case, and the 'amount' column was a number set rather than a character set.
+***Then we cleaned the data set so that all the column names were uniform, the 'recipient' names were all upper case, and the 'amount' column was a number set rather than a character set.***
 
 ```{r}
 clean_sports_pol_donations <- sports_political_donations |>
@@ -33,7 +41,9 @@ clean_sports_pol_donations <- sports_political_donations |>
 clean_sports_pol_donations
 ```
 
-Which team owners gave the most? We need to single out donations from team owners by cycle and party donated to. We were able to almost completely replicate the data presented however, we were unable to trouble-shoot the 'election_cycle' column.
+"This table reflects the total contributions for each owner and commissioner in our database over the past three election cycles, grouped by political party. Note that some family members appear together and that only contributions while owners have been involved with the team are included. Which team owners gave the most? Donations from team owners, by cycle and party donated to."
+
+***#1: We sorted the donations from team owners by cycle and party donated to. We were able to almost completely replicate the data presented but struggled to trouble-shoot the 'election_cycle' column. However, all of the data appears to be there.***
 
 ```{r}
 clean_sports_pol_donations |>
@@ -42,7 +52,9 @@ clean_sports_pol_donations |>
   arrange(desc(total_amount))
 ```
 
-"Significantly more money goes to Republicans: Specifically partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, per election cycle" For this chart, we will need to group contributions by election year, and then create columns for each year that break down donations by party and then also show the total amount donated that year. This can be achieved by making separate dataframes for each party's donations and then merging the dataframes.
+"Significantly more money goes to Republicans: Specifically partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, per election cycle."
+
+***#2: For this chart, we grouped contributions by election year, and then created columns for each year that broke down donations by party and showed the total amount donated that year. We made separate data frames for each party's donations and then merged them to recreate the table shown in the article.***
 
 ```{r}
 rep_df <- clean_sports_pol_donations |>
@@ -88,7 +100,15 @@ year_party_donations |>
   arrange(desc(election_year))
 ```
 
-MLB owners have donated the most Specifically partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, by party, 2016-20
+"MLB owners have donated the most Specifically partisan contributions from owners and commissioners in the NFL, NBA, WNBA, NHL, MLB and NASCAR, by party, 2016-20."
+
+***#3: In this section, we were focused on recreating the table showing political donations from 2016 to 2020 based on league and party, as well as the total.***
+
+***Due to how our data was nested, with bipartisan donations and owners of multiple teams in different leagues, recreating this table was a challenge.***
+
+***To compensate for the shortcomings of the original data frame, we had to create 12 new data frames encompassing each of the six leagues and the two parties their owners donated to. Once we created the new data frame, we grouped by party and league, and then filtered those results by the corresponding party we were looking for and string detected the league we wanted. The only exception to this process was for the NBA, for which we had to also filter out WNBA because it was showing up in our results, as well as two owners who owned WNBA and MLB teams. From there, we summarized the results by adding the values that we isolated from the original data frame.***
+
+***Here is the code:***
 
 ```{r}
 mlb_republican <- clean_sports_pol_donations |>
@@ -153,6 +173,10 @@ nascar_democrat <- clean_sports_pol_donations |>
 
 ```
 
+***Once we created and tested all 12 data frames, we had to create another new data frame serving as our version of the original table. We started by creating our "league" column, then used the sum function to add all of the smaller tables we created for republican and democrat donations. This enabled us to show the results of each of the smaller data frames, as well as the final total.***
+
+***Here is the code:***
+
 ```{r}
 league_donations <- data.frame (league  = c("MLB", "NBA", "NHL", "NFL", "WNBA", "NASCAR"),
     to_republicans = c(sum(mlb_republican$total), sum(nba_republican$total), sum(nhl_republican$total), sum(nfl_republican$total), sum(wnba_republican$total), sum(nascar_republican$total)),
@@ -161,7 +185,7 @@ league_donations <- data.frame (league  = c("MLB", "NBA", "NHL", "NFL", "WNBA", 
 league_donations
 ```
 
-#### RYAN EXAMPLE ####
+***This code block was an example shown to us by Ryan Little, which offered a simpler way to recreate the example above. However, due to the nesting of the original data, we determined that our method was preferred in this case.***
 
 ```{r}
 
@@ -174,8 +198,7 @@ clean_sports_pol_donations |>
 
 ```
 
-####
-
+***End of Ryan's code block.***
 
 ```{r}
 league_donations <- league_donations |>
@@ -184,9 +207,9 @@ league_donations <- league_donations |>
 
 "Drilling down deeper into the data, we can see that federal contributions in each league lean red, except for in the WNBA: Across leagues, a majority of donations go to Republicans (Share of donations from team owners in six leagues, per year, by league and party).Donations may not sum to 100 percent due to bipartisan donations."
 
-***Our first step in recreating the stacked bar charts consists of creating six dataframes for the different leagues which display the total contributions by year and party. Before we do that, we're changing the election_year column to a character format so that it will help organize the bar chart columns later on.***
+***#4: Our first step in recreating the stacked bar charts consists of creating six data frames for the different leagues which display the total contributions by year and party. Before we do that, we're changing the election_year column to a character format so that it will help organize the bar chart columns later on.***
 
-***To find the contributions by league, year and party, we're going to create the dataframe and then group the data by election year and party. Then we're filtering to specifically target the league we're making the dataframe for, as well as just Republicans and Democrats. We're not interested in donations that are "Bipartisan" because they are not accounted for in the bar charts. The code will be the same for each league except for the NBA because we encountered issues with the WNBA's name when we filtered. The last step in this code block is to summarise with the total equaling the sum of the amounts from the results of the filters.***
+***To find the contributions by league, year and party, we're going to create the data frame and then group the data by election year and party. Then we're filtering to specifically target the league we're making the data frame for, as well as just Republicans and Democrats. We're not interested in donations that are "Bipartisan" because they are not accounted for in the bar charts. The code will be the same for each league except for the NBA because we encountered issues with the WNBA's name when we filtered. The last step in this code block is to summarize with the total equaling the sum of the amounts from the results of the filters.***
 
 ***Below is what all of this code looks like:***
 
@@ -226,7 +249,7 @@ wnba_contributions <- clean_sports_pol_donations |>
   summarise(total = sum(amount))
 ```
 
-***Now that we have our individual dataframes for each league, we need to then create six more dataframes for each league with the total amount of donations for each election year. We're going to group our data by election year, party and league. Then we'll filter and string detect like we did in the previous codeblock. We'll summarise with the total equaling the sum of all donations that include each specific league. We'll take those results and group them by election year and calculate the total amount donated per election year.***
+***Now that we have our individual data frames for each league, we need to then create six more data frames for each league with the total amount of donations for each election year. We're going to group our data by election year, party and league. Then we'll filter and string detect like we did in the previous code block. We'll summarize with the total equaling the sum of all donations that include each specific league. We'll take those results and group them by election year and calculate the total amount donated per election year.***
 
 ***Here is that code:***
 
@@ -275,7 +298,7 @@ yearly_total_wnba <- clean_sports_pol_donations |>
 
 ```
 
-***In this next step, we're merging the two dataframes we've made for each league by election year and then mutating to add a column calculating the percentage distribution of political donations by party. To calculate those percentages, we're dividing the total number of donations by party from the combined total of all donations made in a specific election year.***
+***In this next step, we're merging the two data frames we've made for each league by election year and then mutating to add a column calculating the percentage distribution of political donations by party. To calculate those percentages, we're dividing the total number of donations by party from the combined total of all donations made in a specific election year.***
 
 ***Here is that code:***
 
