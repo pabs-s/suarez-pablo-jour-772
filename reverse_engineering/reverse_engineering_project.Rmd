@@ -200,6 +200,8 @@ clean_sports_pol_donations |>
 
 ***End of Ryan's code block.***
 
+***We then mutated our created data frame to add a column that adds up the total donations from Republicans and Democrats. With that, we had our final table. Here is that code:***
+
 ```{r}
 league_donations <- league_donations |>
   mutate(total = to_republicans + to_democrats)
