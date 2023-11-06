@@ -364,3 +364,58 @@ ggplot(wnba_percents, aes(fill=party, y=percents, x=election_year)) +
     geom_bar(position="stack", stat="identity") +
     scale_fill_manual(values=c('blue', 'red'))
 ```
+
+"There are 40 owners who have donated at least \$100,000 to Republican causes over the six-year period, compared to 23 owners topping \$100,000 to Democrats, helping lead to these splits: Team owners give largely to the GOP. Share of donations from team owners in six leagues, per year and per party."
+
+***#5: For our last example, we created a stacked bar chart showing the percentage of political contributions by party in each election year. We started by creating a data frame from our original data frame that groups the data by election year and summarizes with a column that takes the total amount of money donated in each specific election year.***  
+
+```{r}
+
+donations_by_year <- clean_sports_pol_donations |>
+  group_by(election_year) |>
+    summarise(total_amount=sum(amount)) |>
+    arrange(desc(total_amount))
+
+```
+
+***Then we created another data frame that shows the total amount of donations by party for each specific election year. We accomplished this by grouping the data by election year and party, filtering by each individual party and summarizing by adding the donation amounts.***
+
+```{r}
+
+election_year_totals <- 
+clean_sports_pol_donations |>
+  group_by(election_year, party) |>
+   filter(party == "Republican" | party == "Democrat") |>
+  summarise(total = sum(amount))
+
+```
+
+***The next step was to merge the data frames we just created into one data frame based on election year. We renamed the "total" columns to clarify which was one the entire total for the year and the party's total.*** 
+
+```{r}
+
+total_by_year <- merge(donations_by_year, election_year_totals, by = "election_year") |>
+  rename(year_total = "total_amount", party_total = "total")
+
+```
+
+***We took the merged data frame and mutated to add a new column calculating the percentage of donations each party received from owners in a specific election year. To do this we divided the party total from the year total and multiplied by 100.***
+
+```{r}
+
+total_by_year <- total_by_year |>
+  mutate(percents = party_total/year_total*100)
+
+```
+
+***Finally, much like in another example shown above, we created our stacked bar chart using the ggplot function. Here is the final product:*** 
+
+```{r}
+
+ggplot(total_by_year, aes(fill=party, y=percents, x=election_year)) + 
+    geom_bar(position="stack", stat="identity") +
+    scale_fill_manual(values=c('blue', 'red'))
+
+```
+
+
