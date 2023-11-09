@@ -20,6 +20,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 # load libraries here
+library(tidyverse)
+library(janitor)
+library(readr)
 ```
 
 ## Questions
@@ -38,8 +41,29 @@ You MUST do the following things when answering this question:
 * Describe your thought process below - why you chose to make the chart you did - and add the URL of your chart.
 
 **A1.** 
+Chart Link: https://datawrapper.dwcdn.net/2W5uv/1/
+
+I opted to use a bullet bars chart to convey how Larry Hogan outperformed Dan Cox as the Maryland GOP nominee in their respective elections. I thought this chart type would was appropriate because it easily organized the data by county and the stacked format allows readers to easily compare the two candidates. Although the format has its own shortcomings, I think overall it does an adequate job at conveying the difference in how the candidates performed.
 
 ```{r}
+
+md_gov_county <- read_csv("data/md_gov_county.csv")
+md_gov_county_18 <- read_csv("data/md_gov_county_18.csv")
+
+combined_md_gov_county <- 
+  md_gov_county |>
+  left_join(md_gov_county_18, join_by("County", "GEOID")) |>
+    clean_names() |>
+    mutate(geoid = as.character(geoid)) |>
+    filter(!is.na(hogan)) |>
+    group_by(geoid) |>
+    mutate(
+      pct_cox = sum(cox) / sum(cox, moore, lashar, wallace, harding, sefcik, write_ins_x) * 100,
+      pct_hogan = sum(hogan) / sum(hogan, jealous, quinn, schlakman, write_ins_y) * 100
+    )
+
+write_csv(combined_md_gov_county, "data/combined_md_gov_county.csv")
+
 ```
 
 **Q2.** You're interested in seeing how the methods of voting have changed in Maryland since 2018. Using the `md_votes_by_type.csv` that has data from the top of the ticket (governor in 2018 and 2022, president in 2020), make a chart showing the percentage of votes cast in each category - early voting, election day and mail - over the three years. You'll need to make those percentages in R and then export the CSV using `write_csv`, then make the chart in Datawrapper. Have a title, description and source that tells readers about the data. The title and description should highlight the most newsworthy or important aspect.
@@ -51,6 +75,9 @@ What do you think the story here is? Put the answer below along with the URL of 
 **A2.** 
 
 ```{r}
+
+
+
 ```
 
 
