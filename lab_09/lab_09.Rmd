@@ -23,6 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(janitor)
 library(readr)
+library(lubridate)
 ```
 
 ## Questions
@@ -73,10 +74,23 @@ HINT: In Datawrapper's "Check and Describe" tab, you can click on a column to ge
 What do you think the story here is? Put the answer below along with the URL of your chart.
 
 **A2.** 
+Chart Link: https://datawrapper.dwcdn.net/68zOc/1/
+
+I think that the story is that Maryland voters are returning to the polls after massive surges in early and mail-in voting in 2020.
+
 
 ```{r}
 
+md_votes_by_type <- read_csv("data/md_votes_by_type.csv")
 
+md_votes_by_type <- md_votes_by_type |>
+  mutate(
+    pct_early = Early / sum(Early, `Election Day`, Mail) * 100,
+    pct_eday = `Election Day` / sum(Early, `Election Day`, Mail) * 100,
+    pct_mail = Mail / sum(Early, `Election Day`, Mail) * 100) |>
+  clean_names()
+
+write_csv(md_votes_by_type, "data/md_votes_by_type.csv")
 
 ```
 
@@ -96,4 +110,25 @@ What do you think the story here is, and what would you want to know more about?
 **A3.** 
 
 ```{r}
+
+montgomery_2022_overdoses <- read_csv("data/montgomery_2022_overdoses.csv") 
+
+montgomery_2022_overdoses |>
+  group_by(zip) |>
+  mutate(zip_calls = n(),
+  zip_call_pct = zip_calls / (sum(zip_calls)) * 100)
+ 
+
+```
+
+```{r}
+
+montgomery_2022_overdoses |>
+  group_by(zip) |>
+  mutate(zip_calls = n()) |>
+  group_by(zip) |>
+  summarize(total_calls = sum(zip_calls))
+
+
+
 ```
