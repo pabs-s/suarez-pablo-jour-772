@@ -108,27 +108,24 @@ write_csv(md_votes_by_type, "data/md_votes_by_type.csv")
 What do you think the story here is, and what would you want to know more about? Put the answer below along with the URL of your map.
 
 **A3.** 
+Map Link: https://datawrapper.dwcdn.net/6VTNC/1/
+
+I think that the story here is that Rockville, Germantown and Silver Spring have the highest number of reported overdoses in the county. I would want to know how Montgomery County compares to the rest of the state.
 
 ```{r}
 
 montgomery_2022_overdoses <- read_csv("data/montgomery_2022_overdoses.csv") 
 
-montgomery_2022_overdoses |>
+mont_2022_overdose_zip_calls <- montgomery_2022_overdoses |>
+  group_by(zip) |>
+  mutate(zip_calls = n())
+
+montgomery_2022_overdoses <- montgomery_2022_overdoses |>
   group_by(zip) |>
   mutate(zip_calls = n(),
-  zip_call_pct = zip_calls / (sum(zip_calls)) * 100)
- 
+         zip_call_percent = zip_calls/sum(mont_2022_overdoes_zip_calls$zip_calls)*100)
+
+write_csv(montgomery_2022_overdoses, "data/montgomery_2022_overdoses.csv")
 
 ```
 
-```{r}
-
-montgomery_2022_overdoses |>
-  group_by(zip) |>
-  mutate(zip_calls = n()) |>
-  group_by(zip) |>
-  summarize(total_calls = sum(zip_calls))
-
-
-
-```
