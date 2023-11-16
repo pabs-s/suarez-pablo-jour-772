@@ -19,7 +19,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 # Load libraries
-
+library(tidyverse)
+library(sf)
+library(janitor)
+library(refinr)
+library(lubridate)
+library(dplyr)
+library(readr)
+library(tigris)
 ```
 
 Let's explore Maryland elections, power outages and electric vehicle data and make some maps! 
@@ -33,6 +40,34 @@ Get the geometry for Maryland's counties using tigris and, joining that datafram
 **A1.** 
 
 ```{r}
+
+md_statewide_county <- read_csv("data/md_statewide_county.csv") |>
+clean_names()
+
+md_statewide_county <- md_statewide_county |> 
+  mutate(geoid = as.character(geoid)) |>
+  mutate(
+      total_gov_votes = sum(cox, moore, lashar, wallace, harding, sefcik, gov_writein),
+      pct_moore_county = moore / (total_gov_votes) * 100,
+      pct_moore_election = sum(pct_moore_county),
+      total_ag_votes = sum(peroutka, brown, ag_writein),
+      pct_brown_county = brown / (total_ag_votes) *100,
+      pct_brown_election = sum(pct_brown_county),
+      pct_diff_mb = (pct_moore_election) - (pct_brown_election))
+
+md_counties <- counties |>
+  filter(STATEFP == "24") |>
+  mutate(GEOID = as.character(GEOID)) |>
+  clean_names()
+  
+combined_md_election_shape <- md_statewide_county |>
+  left_join(md_counties, join_by("geoid")) 
+
+```
+```{r}
+
+#make a county level map
+
 ```
 
 **Q2.** Make a county-level map to explore the number of customers impacted by power outages in Maryland. Load the `county_outages_march2023.csv` file in the data folder and calculate a rate of customers with outages per 10,000 total customers for each county. Then join that dataframe to your Maryland counties dataframe you made in Q1 and create a county-level map of the results; you may need to tweak the fill scale to make the distinctions clearer. What's the potential story here? Given access to other months' outage data, what would your next steps be in reporting a story?
