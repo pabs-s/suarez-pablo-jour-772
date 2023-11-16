@@ -98,3 +98,9 @@ Obvious Limitations or Flaws:
 -   We wish that this data set included each game's price on release. This is outside data that we'd have to create a data frame for and merge it to our bgg_dataset (or a smaller data set) in order to answer our last question.
 
 ## ***Project Milestone #3***
+
+For this milestone we were expected to complete the following tasks:
+
+- Show an attempt to answer questions created during Milestone #1
+
+- Provide a 250-word summary of the most interesting newsworthy findings so far 
