@@ -1,0 +1,68 @@
+---
+title: "data_analysis_project"
+author: "Alisha Camacho, Steven Jacobs and Pablo Suarez"
+date: "2023-11-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Welcome to the JOUR772 data analysis markdown file of Alisha Camacho, Steven Jacobs and Pablo Suarez. Below, we are analyzing a Kaggle data set containing data collected on board games from the BoardGameGeek (BGG) website in February 2021. BGG, the largest online collection of board game data, relies on its voluntary community to build its database by providing site contributions in the form of board game reviews, ratings, images, videos and live discussion forums, among others.
+
+This data set incorporates those user contributions and contains information on roughly 20,000 board games scraped from the BGG rankings as of the date of collection by the original data set creators. It does not feature any unranked games, as those games do not meet the 30 vote threshold needed to be eligible for rankings.
+
+Columns in this data set include a game's unique BGG ID, name, year published, minimum players required, maximum players allowed, average play time, minimum age required, number of users who rated the game, average rating, the BGG rank, complexity average, number of owned users, mechanics and domains.
+
+***Link to the data set: <https://www.kaggle.com/datasets/andrewmvd/board-games/>***
+
+***Project Milestone #1***
+We were asked to craft newsworthy questions that we'd like to attempt to answer about this data set. Our questions include:
+
+- What is the relationship, if any, between average play-time impact average rating?
+
+- How are the games for 4 or 5+ players rated differently or more frequently than games intended for fewer players? Same for solo games.
+
+- Measuring by year and decade, what are the top average board games, domains and mechanics?
+
+- How does the complexity of board games vary based on the recommended minimum age?
+
+- What are the highest-rated games that are the most owned and have the most users rated? How does this list compare to the BGG rankings?
+
+- What are the 25 oldest games in our data set, how much did they cost on release and how much do they cost now? Did they increase in price, and if so, does that follow the inflation rate?
+
+***Project Milestone #2***
+In this section of the project, we were tasked with creating our markdown file and accomplishing the following tasks:
+
+- Load and clean the core data set to prepare for analysis. 
+
+- Show basic exploratory analysis to demonstrate an understanding of the data set. Include the number of rows and columns, any obvious limitations or flaws and any reasons why it might not be able to answer the research questions.
+
+We began by loading our libraries and settings in the notebook.
+
+```{r}
+
+# Turn off scientific notation
+options(scipen=999)
+
+# Load our libraries
+library(tidyverse)
+library(janitor)
+library(refinr)
+library(lubridate)
+library(dplyr)
+library(readr)
+
+```
+
+Next, we loaded in our core data set.
+
+```{r}
+
+bgg_dataset <- read.csv("data/bgg_dataset.csv")
+view(bgg_dataset)
+
+```
+
+
