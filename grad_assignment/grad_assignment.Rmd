@@ -3,28 +3,107 @@ title: "grad_assignment"
 author: "Pablo Suarez"
 date: "2023-11-24"
 output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## INTRODUCTION
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Welcome to Pablo Suarez's markdown file for the JOUR772 Graduate Student
+Assignment. Below, I am analyzing the Reported Sewer Overflows data set
+provided by the Maryland Department of the Environment. This data set
+contains information regarding reported sewer overflows across the state
+of Maryland from January 1, 2005 through January 31, 2023.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+An important note from the data set creators: "Although MDE requires
+that all public sewer system owners or operators report overflows to us,
+there may be incidents that were not reported. Note that overflow
+amounts provided by the person reporting the overflow may be estimated
+using best professional judgment or they may be actual readings from
+flow measurement devices when available. Penalty information started
+during 2013."
 
-```{r cars}
-summary(cars)
+Data Profile, Scope and Limitations:
+
+Rows -- 27,479
+
+Columns -- 22
+
+Who created and maintains the data? -- Maryland Department of the
+Environment
+
+Dataset Owner -- Andrew Gosden
+
+What state program or law is connected to it? -- Unclear
+
+What does each row represent? -- One overflow event
+
+Columns: overflow type, municipality/facility (it occurred in), NPDES \#
+(National Pollutant Discharge Elimination System identification number
+for the facility or system), date discovered, time discovered, duration
+(days, hours, minutes), location, zip code, collection-system, quantity
+in gallons, net in gallons, cause, watershed, receiving waters, county,
+notes, penalty collected, penalty comments, latitude, longitude
+
+What is the chronological and geographic scope of this data? -- Reported
+sewer overflows across the state of Maryland from January 1, 2005,
+through January 31, 2023.
+
+Newsworthy questions that I'd like to answer with this data set: Which
+counties reported the most sewer overflows over the dataset's observed
+period of time?
+
+- Which counties had the most severe sewer overflows (by quantity, time or
+both) and when did they occur? Follow-up: Which reported incidents were
+highest in terms of overflow that was not collected?
+
+- What is the average quantity of gallons of sewer overflows?
+
+- Can I find the percentage of reported overflows by county? (Imaginary
+Example: Wicomico County accounted for 15% of sewer overflows in the
+state.)
+
+- What are the most common types of sewer overflows? Follow-up: Could I do
+a percentage breakdown of this as well?
+
+- Which Maryland watersheds have been most impacted by sewer overflows?
+
+- (Extra work) How might the frequency or severity of these overflows
+compare with Maryland rainfall data?
+
+***Link to the data set:
+<https://opendata.maryland.gov/Energy-and-Environment/Reported-Sewer-Overflows/3rgd-zjxx>***
+
+## ***Section #1***
+
+To begin the assignment, I loaded in several libraries that might be relevant, as well as my selected data set, which I cleaned in OpenRefine.
+
+```{r}
+
+# Turn off scientific notation
+options(scipen=999)
+
+# Load my libraries
+library(tidyverse)
+library(janitor)
+library(refinr)
+library(lubridate)
+library(dplyr)
+library(readr)
+
 ```
 
-## Including Plots
+```{r}
 
-You can also embed plots, for example:
+cleaned_sewer_overflows <- read_csv("data/cleaned_sewer_overflows.csv") |>
+  clean_names()
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
