@@ -142,7 +142,7 @@ Let's say we are interested in 2023, so all we need to do now is to store that f
 ### Task 5: Save one table from the HTML source
 **Task** Run the following code in the gray-colored codeblock below to extract all tables in the HTML and save it as a dataframe. What do you notice about the columns?
 **Answer** 
-
+It's now only showing us the results for one of the tables.
 ```{r}
 # Read in all html from table, store all tables on page as nested list of dataframes.
 results <- courts_url |>
@@ -164,7 +164,7 @@ From here, we can do a little cleaning. First we'll use clean_names() to lower t
 ### Task 6: Clean up the data
 **Task** Run the following code to extract the table we want, clean up the names and change the date column to an actual date. Look at the dataframe; what other information about these releases might you want to add?
 **Answer** 
-
+We may want to know the author name, the county that the story primarily takes place in and potential views.
 ```{r}
 # Read in all html from table, get the HTML table.
 results <- courts_url |>
@@ -218,7 +218,7 @@ Once again we get a list of two as our result. In this case, we don't want to is
 ### Task 10: Isolate the list of `li` tags inside the HTML using `html_elements`
 **Task** Run the following code in the gray-colored codeblock below to find the <li> tags. What does the output suggest about how many <ul> tags there are in the HTML source?
 **Answer** 
-
+The output shows us 20 results. However, at the top of the results it says "xml_nodeset (122)" which leads me to believe that 122 is our total number of <li> tags and at least 2 <ul> tags.
 ```{r}
 osp_results |> html_elements('li')
 ```
@@ -228,7 +228,7 @@ Good news and bad news here: we have all of the <li> tags, but we have lots of t
 ### Task 10: Isolate the text of `li` tags inside the HTML using `html_text`
 **Task** Run the following code in the gray-colored codeblock below to find the text inside <li> tags. Describe the output:
 **Answer** 
-
+The output shows us anything that seems to have a link, whether that be the releases, drop down menus or social media links.
 ```{r}
 osp_results |> html_elements('li') |> html_text()
 ```
@@ -238,7 +238,7 @@ Ok, so now we can see the press releases. But they are surrounded by a bunch of 
 ### Task 11: Turn the contents of the <li> tags into a dataframe
 **Task** Run the following code in the gray-colored codeblock below to make a dataframe. Describe the output:
 **Answer** 
-
+It organized all of our html links into a one-column dataframe.
 ```{r}
 releases <- osp_results |> html_elements('li') |> html_text() |> as_tibble()
 ```
@@ -275,4 +275,4 @@ That worked, but it also exposed a couple of things, as that Warning message ind
 releases <- osp_results |> html_elements('li.listing-item') |> html_text() |> as_tibble() |> separate(value, c('date', 'title'), sep=":") |> drop_na(title) |> mutate(title = str_squish(title), date = mdy(date))
 ```
 
-And now you have the data.
+And now you have the data. 
