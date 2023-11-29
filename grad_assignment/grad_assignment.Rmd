@@ -81,7 +81,7 @@ compare with Maryland rainfall data?
 
 ## ***Section #1***
 
-To begin the assignment, I loaded in several libraries that might be relevant, as well as my selected data set, which I cleaned in OpenRefine.
+To begin the assignment, I loaded in several libraries that I thought might be relevant, as well as my selected data set, which I cleaned in OpenRefine.
 
 ```{r}
 
@@ -104,6 +104,29 @@ cleaned_sewer_overflows <- read_csv("data/cleaned_sewer_overflows.csv") |>
   clean_names()
 
 ```
+
+## ***Section #2***
+
+In this section, I attempted to answer the questions listed at the top of the markdown file. 
+
+Q1: Which counties had the most severe sewer overflows (by quantity, time or both) and when did they occur?
+
+```{r}
+
+cleaned_sewer_overflows |>
+  group_by(county) |>
+  summarise()
+
+
+
+
+```
+
+
+
+
+
+
 
 
 

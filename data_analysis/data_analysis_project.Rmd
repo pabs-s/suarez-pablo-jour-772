@@ -23,7 +23,7 @@ Columns in this data set include a game's unique BGG ID, name, year published, m
 
 We were asked to craft newsworthy questions that we'd like to attempt to answer about this data set. Our questions include:
 
--   What is the relationship, if any, between average play-time impact average rating?
+-   What is the relationship, if any, between average play-time and average rating?
 
 -   How are the games for 4 or 5+ players rated differently or more frequently than games intended for fewer players? Same for solo games.
 
@@ -103,4 +103,85 @@ For this milestone we were expected to complete the following tasks:
 
 - Show an attempt to answer questions created during Milestone #1
 
-- Provide a 250-word summary of the most interesting newsworthy findings so far 
+We were also instructed by Ryan to limit our original questions and add two questions addressing the "mechanics" and "domains" columns.
+Our two new questions:
+- What are, by count, the most common mechanic among games in our data set? 
+
+- What are the most popular domain types by year?
+
+We then began working on some of our original questions: 
+
+## Q1: What is the relationship, if any, between average play-time and average rating?
+
+To identify whether there is a relationship between these two factors, we first grouped the data by the play_time column. Then we summarized to find the count of games within a certain play time value. We also summarized to find the average rating of games within these play time values. 
+
+The most common play time for games in our data set is 30 minutes with 3,638. These games have an average rating of 6.17 out of 10. This was followed by 60 minutes, which had 3,003 games and an average score of 6.43, as well as 45 minutes with 2,207 games and an average rating of 6.35. 
+
+```{r}
+
+bgg_dataset |>
+  group_by(play_time)|>
+  summarise(count = n(), average_rating = mean(rating_average, na.rm = TRUE)) |>
+  arrange(desc(count))
+
+```
+
+If we were to arrange this data in descending order by average rating, we would see smaller sample sizes of games with extremely long play times. The highest rated game by this arrangement method has a play time of 8,640 minutes and a rating of 9.12. However, the first play time window with a sample of over 500 games is 240 minutes with an average score of 6.96. The next play time with a high sample size is 180 minutes (805 games) and an average rating of 6.87. This was followed by 120 minutes (1,618 games) and 90 minutes (1,591 games) with 6.77 and 6.66 ratings, respectively.
+
+```{r}
+
+bgg_dataset |>
+  group_by(play_time)|>
+  summarise(count = n(), average_rating = mean(rating_average, na.rm = TRUE)) |>
+  arrange(desc(average_rating))
+
+```
+## Q2: How does the complexity of board games vary based on the recommended minimum age?
+
+```{r}
+# Assuming bgg_dataset is your dataset of board games
+# Calculate the average minimum age
+average_min_age <- mean(bgg_dataset$min_age, na.rm = TRUE)
+# Print the average minimum age
+print(average_min_age)
+```
+
+```{r} 
+# Assuming bgg_dataset is your dataset of board games
+# Calculate the average complexity score
+average_complexity <- mean(bgg_dataset$complexity_average, na.rm = TRUE)
+# Print the average complexity score
+print(average_complexity)
+```
+
+```{r}
+# Assuming bgg_dataset is your dataset of board games
+# Sort the dataset by min_age in descending order and select the top 1251 rows
+games_highest_min_age <- bgg_dataset[order(-bgg_dataset$min_age), c('name', 'min_age', 'complexity_average')][1:1251, ]
+# Display the list of games with the highest minimum age, sorted by min age requirement
+print(games_highest_min_age)
+```
+
+```{r}
+
+games_lowest_min_age <- bgg_dataset[order(bgg_dataset$min_age), c('name', 'min_age', 'complexity_average')][1:1251, ]
+
+```
+
+```{r}
+
+#Sort the dataset by min_age in ascending order and select the top 1251 rows
+games_lowest_min_age <- bgg_dataset[order(bgg_dataset$min_age), c('name', 'min_age', 'complexity_average')][1:1251, ]
+# Display the list of games with the lowest minimum age, sorted by min age requirement
+print(games_lowest_min_age)
+
+```
+
+Analysis... Out of the 20,343 board games, we first coded to discover the average minimum age requirement needed to play all of the board games. They ended up having a recommended minimum age requirement of approximately 9.6 years old. In relation to the complexity of the games, we then coded to find the average complexity score, which is around 1.99. After that, we coded to find the lowest minimum age requirement for the list of games in the data set, which was 0. We then filtered the 1,251 games with a 0 minimum age requirement to their corresponding complexity score to spot any notable trends. In relation, we felt like it was necessary to code for the top 1,251 games with the highest minimum age requirement and filtered them with their corresponding complexity score as well. When you consider how the complexity varies based on the recommended minimum age, we found that there is a noticeably higher complexity score for the games with a much lower minimum age requirement than the games with the highest age requirements in the data set of board games.
+
+
+
+
+
+
+
