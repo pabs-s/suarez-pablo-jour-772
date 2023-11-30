@@ -54,15 +54,16 @@ What is the chronological and geographic scope of this data? -- Reported
 sewer overflows across the state of Maryland from January 1, 2005,
 through January 31, 2023.
 
-Newsworthy questions that I'd like to answer with this data set: Which
-counties reported the most sewer overflows over the dataset's observed
+Newsworthy questions that I'd like to answer with this data set: 
+
+- Which counties reported the most sewer overflows over the dataset's observed
 period of time?
 
 - Which counties had the most severe sewer overflows (by quantity, time or
 both) and when did they occur? Follow-up: Which reported incidents were
 highest in terms of overflow that was not collected?
 
-- What is the average quantity of gallons of sewer overflows?
+- What is the average quantity of gallons of sewer overflows per event versus the estimated net in gallons?
 
 - Can I find the percentage of reported overflows by county? (Imaginary
 Example: Wicomico County accounted for 15% of sewer overflows in the
@@ -102,6 +103,14 @@ library(readr)
 
 cleaned_sewer_overflows <- read_csv("data/cleaned_sewer_overflows.csv") |>
   clean_names()
+glimpse(cleaned_sewer_overflows)
+
+```
+
+```{r}
+
+cleaned_sewer_overflows <- cleaned_sewer_overflows |>
+mutate(date_discovered = mdy(date_discovered))
 
 ```
 
@@ -109,20 +118,96 @@ cleaned_sewer_overflows <- read_csv("data/cleaned_sewer_overflows.csv") |>
 
 In this section, I attempted to answer the questions listed at the top of the markdown file. 
 
-Q1: Which counties had the most severe sewer overflows (by quantity, time or both) and when did they occur?
+Q1: Which counties reported the most sewer overflows over the dataset's observed period of time?
+
+We're starting the coding portion part of the project on an easy note. To answer this question I grouped the data by county, summarized with a new column called "overflow_count" and arranged the results in descending order. Immediately, I see that Allegany County has, by far, the most reported overflows over time with 10,653. The next highest is Baltimore City with 6,808; followed by Baltimore County with 1,892; Prince George's County with 1,470 and Montgomery County with 1,146 overflow incidents.
 
 ```{r}
 
 cleaned_sewer_overflows |>
   group_by(county) |>
+  summarise(overflow_count = n()) |>
+  arrange(desc(overflow_count))
+
+```
+
+Q2: What is the percentage of reported overflows by county?
+
+Adding to the last codeblock, this question enables me to show the percentage breakdown of overflow incidents by county. I did this by mutating a new column called incident_pct which took the overflow incident count of a specific county, divided it by the sum of all overflow incidents and multiplied the results by 100 to get the percentage.
+
+Unsurprisingly, the results fall in line with what I observed in the first question. Allegany County had the highest share of incidents with 38.7 percent, followed by Baltimore City with 24.7 percent, then it drops significantly with Baltimore County at 6.88 percent and Prince George's County with 5.3 percent. 
+
+```{r}
+
+cleaned_sewer_overflows |>
+  group_by(county) |>
+   summarise(overflow_count = n()) |>
+  mutate(incident_pct = overflow_count / sum(overflow_count) * 100) |>
+  arrange(desc(incident_pct))
+
+```
+
+Q2 Follow-up: What about the distribution of overflows by county and year?
+
+To complete this question I needed to separate the date_discovered column into separate columns in order to be able to group the data by year. I used the separate function and divided the original column into three columns: year, month and day. Then I was able to group the data by county and year, and then summarize with a column called overflow_count adding up a specific county's number of overflow incidents in a specific year.
+
+Then, I used the ungroup function to section off the initial portion of the code block. I mutated a new column called total_count_year, which is the sum of all reported overflow incidents among counties for a specific year. Calculating that total allowed me to add another column showing the percentage for how much a certain county's number of overflows accounted for the total overflows among all counties for that year. I followed a similar process to add a column after that showing the percentage of a county's overflow incidents from a certain year in relation to its total number of incidents over all recorded years in the data set.
+
+Completing these steps allowed me to see which counties had particularly severe years in terms of overflow incidents in relation to other counties and historically.
+
+In terms of newsworthy results, Allegany County in 2007 accounted for 49 percent of all overflow incidents during that year. In 2011, Allegany County saw nearly eight percent of its total overflow incidents occur. Baltimore City accounted for 44 percent of incidents in 2021.
+
+```{r}
+
+cleaned_sewer_overflows |>
+  separate(date_discovered, into = c("year", "month", "day"), sep = "-") |>
+    group_by(county, year) |>
+      summarize(overflow_count = n()) |>
+  ungroup() |>
+  group_by(year) |>
+    mutate(total_count_year = sum(overflow_count),
+         incident_pct_that_year = overflow_count / total_count_year * 100) |>
+  ungroup() |>
+    group_by(county) |>
+      mutate(total_count_all_years = sum(overflow_count),
+         incident_pct_all_years = overflow_count / total_count_all_years * 100) |>
+  select(-total_count_all_years) |>
+  arrange(county, year)
+  
+```
+
+Q3: Which counties had the most severe sewer overflows (by quantity, time or both) and when did they occur?
+
+```{r}
+
+cleaned_sewer_overflows |>
+  group_by(county, net_in_gallons_estimated) |>
   summarise()
+  arrange(desc(net_in_gallons_estimated)) |>
+  select(county, net_in_gallons_estimated)
 
 
 
 
 ```
 
+Q4: What is the average quantity of gallons of sewer overflows per event versus the estimated net in gallons?
 
+There wasn't much code needed to calculate this value. I added the quantity_in_gallons_estimated column while removing any NA values and then divided by the total number of incidents. I then did same for the net_in_gallons_estimated column to see if there was a significant difference from the first column. I added the answers within each code block below.
+
+```{r}
+
+sum(cleaned_sewer_overflows$quantity_in_gallons_estimated, na.rm = TRUE) / 27479 
+#Answer is 255380.5 gallons per event
+
+```
+
+```{r}
+
+sum(cleaned_sewer_overflows$net_in_gallons_estimated, na.rm = TRUE) / 27479 
+#Answer is 254185.4 gallons per event
+
+```
 
 
 
