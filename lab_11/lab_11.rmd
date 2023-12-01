@@ -68,6 +68,7 @@ results |>
 When you finish scraping into a dataframe, write code to find the press releases that have the word "police" in the title. How many are there and when was the most recent one?
 
 **A2** 
+I found eight results with the most recent mention occurring on 2021-06-21.	
 
 ```{r}
 
@@ -83,54 +84,30 @@ opd_results <- opd_url |>
 opd_results
 
 ```
-```{r}
-
-opd_results2 <- opd_results |>
-  html_elements('div.LWbAav.Kv1aVt')
-
-opd_results2
-
-```
 
 ```{r}
 
 opd_titles <- opd_results |>
  html_elements('span.wixui-rich-text__text') |> 
   html_text() |>
-  trimws() |>
   as_tibble() |>
-  distinct() 
-
+  distinct() |>
+  filter(nchar(value) > 2 & grepl("^[0-9]",value)==TRUE) |>
+#nchar is the length of the strings in the blanks. The blanks had a value of 1 or 2, so we raised the filter value to keep strings with more than 2. Then we filter by number.
+  separate(value, c('date', 'title'), sep=":") |>
+  mutate(date = mdy(date), title = str_squish(title))
+  
 opd_titles
 
 ```
 
 ```{r}
 
-opd_titles_df <- as.data.frame(opd_titles)
-
+opd_titles |> 
+  filter(str_detect(tolower(title), "police"))
+ #8 results and most recent is 2021-06-21	
+  
 ```
-
-```{r}
-
-opd_titles_df |>
-  filter(value != " ") |>
-  distinct()
-
-```
-
-```{r}
-
-opd_results <- opd_url |>
-  read_html() |>
-  html_elements('span.wixui-rich-text__text') |>
-  html_text() |>
-  as_tibble()
-
-opd_results
-
-```
-
 
 
 **Q3** Sen. Ben Cardin, D-Maryland, has posted hundreds of press releases at https://www.cardin.senate.gov/?post_type=press-releases. It would be great to have all of them in a dataframe that has the following columns: date, title and url.
