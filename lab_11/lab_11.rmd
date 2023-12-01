@@ -85,11 +85,12 @@ opd_results
 ```
 ```{r}
 
-opd_remove <- html_nodes(opd_results, "span.wixGuard.wixui-rich-text__text") |>
-  html_remove()
+opd_results2 <- opd_results |>
+  html_elements('div.LWbAav.Kv1aVt')
+
+opd_results2
 
 ```
-
 
 ```{r}
 
@@ -97,9 +98,24 @@ opd_titles <- opd_results |>
  html_elements('span.wixui-rich-text__text') |> 
   html_text() |>
   trimws() |>
-  as_tibble()
+  as_tibble() |>
+  distinct() 
 
 opd_titles
+
+```
+
+```{r}
+
+opd_titles_df <- as.data.frame(opd_titles)
+
+```
+
+```{r}
+
+opd_titles_df |>
+  filter(value != " ") |>
+  distinct()
 
 ```
 
