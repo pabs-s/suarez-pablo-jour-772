@@ -17,6 +17,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 **Task** Create a codeblock and load appropriate packages and settings for this lab.
 
+```{r}
+
+library(rvest)
+library(tidyverse)
+library(janitor)
+library(lubridate)
+library(xml2)
+
+```
+
 Let's get to scraping.
 
 ## Questions
@@ -24,8 +34,33 @@ Let's get to scraping.
 **Q1**. Scrape the listing of available Maryland state grants at https://grants.maryland.gov/Pages/StateGrants.aspx into a dataframe. You should have three columns, one of which is a date, so make sure the date column has a date datatype. Then, write code to count the number of grants opportunities offered by each organization listed in your dataframe, showing the organization with the most grant opportunities first. Which state agency has the most?
 
 **A1** 
+The agency with the most grant opportunities is the Maryland Energy Administration.
 
 ```{r}
+
+grants_url <- "https://grants.maryland.gov/Pages/StateGrants.aspx"
+
+```
+
+```{r}
+
+results <- grants_url |>
+  read_html() |>
+  html_table()
+
+results <- bind_rows(results) |>
+  clean_names() |>
+  mutate(due_date = mdy(due_date))
+
+```
+
+```{r}
+
+results |>
+  group_by(organization) |>
+  summarise(grant_opps = n()) |>
+  arrange(desc(grant_opps))
+
 ```
 
 **Q2** Next, let's scrape the list of press releases from Maryland's Office of the Public Defender, https://www.opd.state.md.us/press-releases. This isn't a table, so you'll need to use `html_elements()` and your browser's inspector and do some clean up on the results. The result should be a dataframe with two columns that contain the date and title, and the date column should have a date datatype. The challenge here is figuring out how to isolate the releases.
@@ -35,7 +70,52 @@ When you finish scraping into a dataframe, write code to find the press releases
 **A2** 
 
 ```{r}
+
+opd_url <- "https://www.opd.state.md.us/press-releases"
+
 ```
+
+```{r}
+
+opd_results <- opd_url |>
+  read_html() 
+
+opd_results
+
+```
+```{r}
+
+opd_remove <- html_nodes(opd_results, "span.wixGuard.wixui-rich-text__text") |>
+  html_remove()
+
+```
+
+
+```{r}
+
+opd_titles <- opd_results |>
+ html_elements('span.wixui-rich-text__text') |> 
+  html_text() |>
+  trimws() |>
+  as_tibble()
+
+opd_titles
+
+```
+
+```{r}
+
+opd_results <- opd_url |>
+  read_html() |>
+  html_elements('span.wixui-rich-text__text') |>
+  html_text() |>
+  as_tibble()
+
+opd_results
+
+```
+
+
 
 **Q3** Sen. Ben Cardin, D-Maryland, has posted hundreds of press releases at https://www.cardin.senate.gov/?post_type=press-releases. It would be great to have all of them in a dataframe that has the following columns: date, title and url.
 
@@ -48,6 +128,60 @@ When you're done, rename the columns so they make sense, then make sure the date
 Finally, tell me what questions you could ask of this data. Be creative.
 
 **A3** 
+How many press releases has Cardin and his team produced each year over the last three years? How many of these press releases mention Chris Van Hollen in the headline? By percentage, which month among all the years had the most press releases published?
 
 ```{r}
+
+cardin_url <- "https://www.cardin.senate.gov/?post_type=press-releases"
+cardin_results <- cardin_url |>
+  read_html()
+
+```
+
+```{r}
+
+cardin_titles <- cardin_results |>
+  html_elements(".customBlog_item__title") |>
+  html_text() |>
+  trimws() |>
+  as_tibble() |>
+  filter(value != "Read More")
+
+cardin_titles
+
+```
+
+
+```{r}
+
+cardin_dates <- cardin_results |>
+  html_elements(".customBlog_item__date") |>
+  html_text() |>
+  trimws() |>
+  as_tibble() |>
+  mutate(value = mdy(value))
+
+cardin_dates
+
+```
+
+```{r}
+
+cardin_urls <- cardin_results |>
+  html_elements(".customBlog_item__readMore") |>
+  html_attr("href") |>
+  as_tibble() |>
+  filter(value != "NA")
+
+cardin_urls
+
+```
+
+```{r}
+
+cardinpr_df <- data.frame(
+  date = cardin_dates,
+  title = cardin_titles,
+  url = cardin_urls)
+
 ```
