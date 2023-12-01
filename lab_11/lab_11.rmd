@@ -177,4 +177,6 @@ cardinpr_df <- data.frame(
   title = cardin_titles,
   url = cardin_urls)
 
+cardinpr_df
+
 ```
