@@ -98,6 +98,7 @@ library(dplyr)
 library(readr)
 library(stringi)
 library(stringr)
+library(hash)
 
 ```
 
@@ -191,10 +192,8 @@ Q3: Which counties had the most severe sewer overflows (by quantity, time or bot
 ```{r}
 
 cleaned_sewer_overflows |>
-  group_by(county, net_in_gallons_estimated) |>
-  summarise()
-  arrange(desc(net_in_gallons_estimated)) |>
-  select(county, net_in_gallons_estimated)
+  group_by(county) |>
+  arrange(desc(net_in_gallons_estimated)) 
 
 
 
@@ -219,7 +218,80 @@ sum(cleaned_sewer_overflows$net_in_gallons_estimated, na.rm = TRUE) / 27479
 
 ```
 
+Q5: Which Maryland watersheds have been most impacted by sewer overflows?
 
+```{r}
+
+cleaned_sewer_overflows |>
+  group_by(receiving_waters) |>
+  summarise(rw_incidents = n()) |> 
+  filter(receiving_waters != "NA|N/A") |>
+  arrange(desc(rw_incidents))
+
+```
+
+Q6: What are the most common types of sewer overflows? 
+
+First, I made a new data frame that isolates blockage causes and a total count. I wasn't satisfied with this raw count because I was more interested in finding out the number of times they were either the sole and/or contributing factor in a sewer blockage.
+
+```{r}
+
+blockage_causes <- cleaned_sewer_overflows |>
+  group_by(cause) |>
+  summarise(cause_count = n()) |>
+  filter(cause != "NA|N/A") |>
+  mutate(cause = str_to_lower(cause)) |>
+  arrange(desc(cause_count))
+
+```
+
+One method to accomplish this would be to filter the cause column in this data frame and string detect each major cause. However, this method would omit results nested within columns that have multiple causes contributing to a blockage.
+
+```{r}
+#Don't run this codeblock
+blockage_causes |> 
+  filter(str_detect(cause, "Precipitation")) |> 
+    summarise(cause = "Precipitation", total = sum(cause_count))
+
+```
+
+Instead, I opted to create a 'for' loop. I first created a list of the most common factors contributing to sewer blockages and overflows. The next line of code "h = hash()" creates an empty hash in which we store key value pairs where the key is the 'cause' of the sewer overflow and the value is the count.
+
+From there, I created the loop checking the data frame for each item in the list. Essentially, this loop is string detecting for each of these causes, then summarizing the count in which they appear. Finally, I wrote code to turn the result of the for loop into a separate data frame called 'cause_counts' that I could use to conduct further analysis.
+
+```{r}
+
+cause_list <- list("rags", "grease", "roots", "rain", "trash", "debris", "sand", "gravel", "rocks", "break", "malfunction", "excess", "fail", "vandalism", "defective", "error", "precipitation")
+
+h = hash()
+
+for (x in cause_list) {
+ df =  blockage_causes |> 
+    filter(str_detect(cause, x)) |> 
+    summarise(cause = x, total = sum(cause_count))
+
+  h[[x]] <- df$total
+
+}
+
+```
+
+```{r}
+
+hash_list <- list(causes = keys(h), counts = values(h))
+cause_counts <- as.data.frame(hash_list)
+
+```
+
+With this last code block below, I can see that precipitation, rain, rags, grease and roots are the top five culprits. Precipitation and rain could mean the same thing, however, it's tough to know exactly how each were meant to be interpreted so I left them apart. I then took the total number of incidents (rows) from the original data frame and divided each count by that number to find the frequency in which these terms appeared in the cause column.
+
+```{r}
+
+cause_counts |>
+  mutate(pct_cause = counts / (27479) * 100) |>
+  arrange(desc(pct_cause))
+
+```
 
 
 
