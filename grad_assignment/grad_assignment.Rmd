@@ -56,26 +56,19 @@ through January 31, 2023.
 
 Newsworthy questions that I'd like to answer with this data set: 
 
-- Which counties reported the most sewer overflows over the dataset's observed
-period of time?
+- Which counties reported the most sewer overflows over the dataset's observed period of time? d
 
-- Which counties had the most severe sewer overflows (by quantity, time or
-both) and when did they occur? Follow-up: Which reported incidents were
-highest in terms of overflow that was not collected?
+- Which counties had the most severe sewer overflows (by quantity, time or both) and when did they occur? Follow-up: Which reported incidents were highest in terms of overflow that was not collected?
 
-- What is the average quantity of gallons of sewer overflows per event versus the estimated net in gallons?
+- What is the average quantity of gallons of sewer overflows per event versus the estimated net in gallons? d
 
-- Can I find the percentage of reported overflows by county? (Imaginary
-Example: Wicomico County accounted for 15% of sewer overflows in the
-state.)
+- Can I find the percentage of reported overflows by county? (Imaginary Example: Wicomico County accounted for 15% of sewer overflows in the state.) d
 
-- What are the most common types of sewer overflows? Follow-up: Could I do
-a percentage breakdown of this as well?
+- What are the most common types of sewer overflows? Follow-up: Could I do a percentage breakdown of this as well? d
 
-- Which Maryland watersheds have been most impacted by sewer overflows?
+- Which Maryland watersheds have been most impacted by sewer overflows? d
 
-- (Extra work) How might the frequency or severity of these overflows
-compare with Maryland rainfall data?
+- (Further Research Question) How might the frequency or severity of these overflows compare with Maryland rainfall data?
 
 ***Link to the data set:
 <https://opendata.maryland.gov/Energy-and-Environment/Reported-Sewer-Overflows/3rgd-zjxx>***
@@ -108,13 +101,6 @@ cleaned_sewer_overflows <- read_csv("data/cleaned_sewer_overflows.csv") |>
   clean_names() 
   
 glimpse(cleaned_sewer_overflows)
-
-```
-
-```{r}
-
-
-
 
 ```
 
@@ -219,6 +205,8 @@ sum(cleaned_sewer_overflows$net_in_gallons_estimated, na.rm = TRUE) / 27479
 ```
 
 Q5: Which Maryland watersheds have been most impacted by sewer overflows?
+
+A group_by, summarise and filtering of "NA" results led me to acquiring the count of incidents occurring in specific watersheds. The highest amount was "Unknown" watersheds, followed by George's Creek as the highest named watershed.
 
 ```{r}
 

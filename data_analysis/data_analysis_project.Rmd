@@ -71,7 +71,8 @@ Here is the code showing how we imported and cleaned our data:
 ```{r}
 
 bgg_dataset <- read.csv("data/bgg_dataset.csv", sep = ";") |>
-   clean_names()
+  clean_names() |>
+  mutate(mechanics = str_to_lower(mechanics))
 
 bgg_dataset$rating_average <- gsub(",", ".", bgg_dataset$rating_average)
 bgg_dataset$complexity_average <- gsub(",", ".", bgg_dataset$complexity_average)
@@ -83,6 +84,7 @@ bgg_dataset <- bgg_dataset |>
          complexity_average = as.numeric(complexity_average))
 
 glimpse(bgg_dataset)
+
 ```
 
 Explanatory Analysis of the Data Set:
@@ -105,7 +107,7 @@ For this milestone we were expected to complete the following tasks:
 
 We were also instructed by Ryan to limit our original questions and add two questions addressing the "mechanics" and "domains" columns.
 Our two new questions:
-- What are, by count, the most common mechanic among games in our data set? 
+- What are, by count, the most common mechanics among games in our data set? 
 
 - What are the most popular domain types by year?
 
@@ -127,6 +129,8 @@ bgg_dataset |>
 ```
 
 If we were to arrange this data in descending order by average rating, we would see smaller sample sizes of games with extremely long play times. The highest rated game by this arrangement method has a play time of 8,640 minutes and a rating of 9.12. However, the first play time window with a sample of over 500 games is 240 minutes with an average score of 6.96. The next play time with a high sample size is 180 minutes (805 games) and an average rating of 6.87. This was followed by 120 minutes (1,618 games) and 90 minutes (1,591 games) with 6.77 and 6.66 ratings, respectively.
+
+Further analysis of this question could include mutating the data so that games are grouped into play time ranges (i.e., 0-60 mins, 61-120 mins, etc.) and then finding the total average rating of games within those groups.
 
 ```{r}
 
@@ -179,9 +183,105 @@ print(games_lowest_min_age)
 
 Analysis... Out of the 20,343 board games, we first coded to discover the average minimum age requirement needed to play all of the board games. They ended up having a recommended minimum age requirement of approximately 9.6 years old. In relation to the complexity of the games, we then coded to find the average complexity score, which is around 1.99. After that, we coded to find the lowest minimum age requirement for the list of games in the data set, which was 0. We then filtered the 1,251 games with a 0 minimum age requirement to their corresponding complexity score to spot any notable trends. In relation, we felt like it was necessary to code for the top 1,251 games with the highest minimum age requirement and filtered them with their corresponding complexity score as well. When you consider how the complexity varies based on the recommended minimum age, we found that there is a noticeably higher complexity score for the games with a much lower minimum age requirement than the games with the highest age requirements in the data set of board games.
 
+## ***Project Milestone #4***
+
+For this milestone we were expected to complete the following tasks:
+
+- Shows a draft of data notebook in which you demonstrate substantial progress on the questions you set out to answer at the beginning of the project. This means you should have started on each of them, but you may not have finished.
+
+- Has narrative for your code that explains each of your questions, your findings so far and what you do and don't know as a result of them.
+
+- Identifies your most newsworthy finding so far and explain why it is.
+
+
+## Q3: What are, by count, the most common mechanics among games in our data set? 
+
+To find our answer, we made a new data frame grouped by the mechanics column and summarizing the count of mechanics so that we got an idea of the strings that appeared the most within the original data set.
+
+```{r}
+
+mechanics_group <- bgg_dataset |>
+  group_by(mechanics) |>
+  summarise(mech_count = n()) |>
+  arrange(desc(mech_count))
+  
+```
+
+Next, we began creating a for loop to get a more accurate count of how frequently these mechanics appear in the list, including within columns with nested data. We made a list of the most common strings appearing in our grouped mechanics data frame that we want the loop to search for. Then we created a hash where we stored our key value pairs; the key is our list and the value is the sum of their total mentions. 
+
+Then we made the for loop, which pulls each string one-by-one from our list, cross-references it with our mechanics_group data frame, counts the number of mentions and stores the results in the hash. Then we converted it into a data frame that we could use for further analysis called popular_mechs.
+
+```{r}
+
+mech_list <- list("hand management", "hexagon grid", "dice rolling", "simulation", "set collection", "spin and move", "roll", "pattern recognition", "pattern building", "memory", "cooperative game", "trick-taking", "card drafting", "auction/bidding", "player elimination", "grid movement", "push your luck", "simultaneous action selection", "betting and bluffing", "voting", "area movement", "team-based game", "modular board", "storytelling", "point to point movement", "take that", "variable player powers", "deck bag and pool building", "tile placement", "area majority", "influence", "chit-pull system", "paper-and-pencil", "worker placement", "acting", "network and route building")
+
+h = hash()
+
+for (x in mech_list) {
+ df =  mechanics_group |> 
+    filter(str_detect(mechanics, x)) |> 
+    summarise(mechanics = x, total = sum(mech_count))
+
+  h[[x]] <- df$total
+
+}
+
+```
+
+```{r}
+
+mech_hash_list <- list(mechanics = keys(h), counts = values(h))
+popular_mechs <- as.data.frame(mech_hash_list)
+
+```
+
+We arranged the popular_mechs data frame to arrange it in order and identify our most mentioned game mechanics. The top five results is as follows: "roll" (6,622), "dice rolling" (5,672), "hand management" (4,152), "set collection" (2,733) and "variable player powers" (variable player powers).
+
+```{r}
+
+popular_mechs |>
+  arrange(desc(counts))
+
+```
+
+We don't know exactly how certain mechanics might impact a game's average rating or rank on the list, but the code block below serves as an example of how we could figure that out if we were to explore this as a continuation of our original project.
+
+We would group by game name, filter and string detect the mechanics column by a specific string, in this case we're used our top result "roll." Then we'd remove almost all of the columns except for name, rating_average, users_rated and bgg_rank. Finally, arrange in descending order by rating_average or bgg_rank.
+
+```{r}
+
+bgg_dataset |>
+  group_by(name) |>
+  filter(str_detect(mechanics, "roll")) |>
+  select(-c(id, year_published, min_players, max_players, play_time, min_age, complexity_average, owned_users, domains, mechanics)) |>
+  arrange(desc(rating_average))
+
+```
+
+## Q4: What are the most popular domain types by year?
+
+```{r}
+
+bgg_dataset |>
+  group_by(year_published) |>
+  summarise(count = n()) |>
+  arrange(desc(count))
 
 
 
 
+```
+
+## Q5: Measuring by year and decade, what are the top average board games?
+
+Upon looking at the years_published we calculated that there are approximately 84 games with missing unpublished years. We researched and added the year published for top rated games. From there, we categorized games by the following parameters to determine the highest and lowest ranking game per time-period:
+- Pre-Year 0
+- Pre-1900
+- 1000 to 1499
+- 1500 to 1599
+- 1600 to 1699
+- 1700 to 1799
+- 1800 to 1899
+- After 1900 we grouped by decade. 
 
 
