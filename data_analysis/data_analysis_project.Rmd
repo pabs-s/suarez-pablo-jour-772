@@ -189,10 +189,21 @@ For this milestone we were expected to complete the following tasks:
 
 - Shows a draft of data notebook in which you demonstrate substantial progress on the questions you set out to answer at the beginning of the project. This means you should have started on each of them, but you may not have finished.
 
+To recap, our questions are:
+
+- What is the relationship, if any, between average play-time and average rating?
+- What are, by count, the most common mechanics among games in our data set? 
+- What are the most popular domain types by year?
+- Measuring by year and decade, what are the top average board games?
+- How does the complexity of board games vary based on the recommended minimum age?
+
 - Has narrative for your code that explains each of your questions, your findings so far and what you do and don't know as a result of them.
 
 - Identifies your most newsworthy finding so far and explain why it is.
 
+Our most newsworthy finding was finding out the most used game mechanics on this list. In a question below, we find that the top five results is as follows: "roll" (6,622), "dice rolling" (5,672), "hand management" (4,152), "set collection" (2,733) and "variable player powers" (variable player powers). This is significant because we can then see how popular games with these mechanics are and make recommendations to game creators about what mechanics they should build games with.
+
+We also think that another potential story idea is a review of the best 2023 games, while also including a narrative on how games have ranked over time as we enter the new year. However, this is ultimately dependent on when we would be able to see that new information.
 
 ## Q3: What are, by count, the most common mechanics among games in our data set? 
 
@@ -260,28 +271,121 @@ bgg_dataset |>
 
 ## Q4: What are the most popular domain types by year?
 
+To find out, we grouped the data by year published and domains, then summarized a count for games in each domain and arranged in descending order by year published and count. 
+
+What was clear from this result was that for the most part strategy games seemed to be at the top spot or within a couple of spots from the top of the list every year. However, there are quite a few games that were ommitted from this list because they did not have a value in the domains column. We also can see that some of the domains are nested within certain rows. Therefore, more work might be needed to get a more representative count of domains.
+
 ```{r}
 
 bgg_dataset |>
-  group_by(year_published) |>
+  group_by(year_published, domains) |>
   summarise(count = n()) |>
-  arrange(desc(count))
-
-
-
-
+  arrange(desc(year_published), desc(count))
+  
 ```
 
 ## Q5: Measuring by year and decade, what are the top average board games?
 
 Upon looking at the years_published we calculated that there are approximately 84 games with missing unpublished years. We researched and added the year published for top rated games. From there, we categorized games by the following parameters to determine the highest and lowest ranking game per time-period:
-- Pre-Year 0
-- Pre-1900
-- 1000 to 1499
-- 1500 to 1599
-- 1600 to 1699
-- 1700 to 1799
-- 1800 to 1899
-- After 1900 we grouped by decade. 
 
+Games Rated Before 1900:
+
+- 1000 to 1499
+Highest Rating = Chu Shogi
+Lowest Rating = Fox and Geese
+
+- 1500 to 1599
+Highest Rating = Shogi
+Lowest Rating = Bingo
+
+- 1600 to 1699 
+Highest Rating = Cribbage
+Lowest Rating = Solitaire
+
+- 1700 to 1799
+Highest Rating = Mus
+Lowest Rating = Roulette
+
+- 1800 to 1899
+Highest Rating = Sheepshead
+Lowest Rating = Bunco
+
+```{r}
+#plug dates into filter 
+
+games_pre1900 <- bgg_dataset_year_join |> 
+  filter(year_published >= "1700" & 
+         year_published <= "1799") |> 
+  #arrange(desc(rating_average))
+  arrange(rating_average)
+
+games_pre1900
+
+```
+Games Rated by Decade from 1900-Onward:
+
+- 1900 to 1909
+Highest Rating = 500
+Lowest Rating = Touring
+
+- 1910 to 1919
+Highest Rating = Button Soccer
+Lowest Rating = Uncle Wiggily
+
+- 1920 to 1929
+Highest Rating = Bridge
+Lowest Rating = Cootie
+
+- 1930 to 1939
+Highest Rating = American Mah Jongg
+Lowest Rating = Slap Jack
+
+- 1940 to 1949
+Highest Rating = Subbuteo
+Lowest Rating = Candy Land
+
+- 1950 to 1959
+Highest Rating = Eleusis
+Lowest Rating = Curious George Match-a-Balloon Game
+
+- 1960 to 1969
+Highest Rating = Strat-O-Matic Baseball
+Lowest Rating = Kreskin's ESP
+
+- 1970 to 1979
+Highest Rating = Sports Action Canadian Pro Football
+Lowest Rating = The Ungame
+
+- 1980 to 1989
+Highest Rating = Manassas
+Lowest Rating = LCR
+
+- 1990 to 1999
+Highest Rating = 1849: The Game of Sicilian Railways
+Lowest Rating = Global Survival
+
+- 2000 to 2009
+Highest Rating = Gladiatoris
+Lowest Rating = Rock Paper Scissors Game
+
+- 2010 to 2019
+Highest Rating = TerroriXico
+Lowest Rating = Oneupmanship: Mine's Bigger
+
+- 2020 to 2022
+Highest Rating = DEFCON 1
+Lowest Rating = The Umbrella Academy Game
+
+```{r}
+#plug dates into filter 
+
+games_post1900 <- bgg_dataset_year_join |> 
+  filter(year_published >= "2020" & 
+         year_published <= "2023") |> 
+  #arrange(desc(rating_average))
+  arrange(rating_average)
+
+games_post1900
+
+```
 
