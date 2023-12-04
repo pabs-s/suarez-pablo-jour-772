@@ -43,7 +43,7 @@ What state program or law is connected to it? -- Unclear
 
 What does each row represent? -- One overflow event
 
-Columns: overflow type, municipality/facility (it occurred in), NPDES \#
+Columns: overflow type, municipality/facility (it occurred in), NPDES
 (National Pollutant Discharge Elimination System identification number
 for the facility or system), date discovered, time discovered, duration
 (days, hours, minutes), location, zip code, collection-system, quantity
@@ -54,28 +54,41 @@ What is the chronological and geographic scope of this data? -- Reported
 sewer overflows across the state of Maryland from January 1, 2005,
 through January 31, 2023.
 
-Newsworthy questions that I'd like to answer with this data set: 
+Newsworthy questions that I'd like to answer with this data set:
 
-- Which counties reported the most sewer overflows over the dataset's observed period of time? d
+-   Which counties reported the most sewer overflows over the dataset's
+    observed period of time?
 
-- Which counties had the most severe sewer overflows (by quantity, time or both) and when did they occur? Follow-up: Which reported incidents were highest in terms of overflow that was not collected?
+-   Which counties had the most severe sewer overflows (by quantity,
+    time or both) and when did they occur? Follow-up: Which reported
+    incidents were highest in terms of overflow that was not collected?
 
-- What is the average quantity of gallons of sewer overflows per event versus the estimated net in gallons? d
+-   What is the average quantity of gallons of sewer overflows per event
+    versus the estimated net in gallons?
 
-- Can I find the percentage of reported overflows by county? (Imaginary Example: Wicomico County accounted for 15% of sewer overflows in the state.) d
+-   Can I find the percentage of reported overflows by county?
+    (Imaginary Example: Wicomico County accounted for 15% of sewer
+    overflows in the state.)
 
-- What are the most common types of sewer overflows? Follow-up: Could I do a percentage breakdown of this as well? d
+-   What are the most common types of sewer overflows? Follow-up: Could
+    I do a percentage breakdown of this as well?
 
-- Which Maryland watersheds have been most impacted by sewer overflows? d
-
-- (Further Research Question) How might the frequency or severity of these overflows compare with Maryland rainfall data?
+-   Which Maryland watersheds have been most impacted by sewer
+    overflows?
 
 ***Link to the data set:
 <https://opendata.maryland.gov/Energy-and-Environment/Reported-Sewer-Overflows/3rgd-zjxx>***
 
 ## ***Section #1***
 
-To begin the assignment, I loaded in several libraries that I thought might be relevant, as well as my selected data set, which I cleaned in OpenRefine.
+To begin the assignment, I loaded in several libraries that I thought
+might be relevant, as well as my selected data set, which I cleaned in
+OpenRefine. There were a couple of spelling errors that made it through
+the OpenRefine process. I corrected them here so that they would not
+impact any results.
+
+I also loaded in American Community Survey Maryland county population
+data for visualization purposes.
 
 ```{r}
 
@@ -92,13 +105,22 @@ library(readr)
 library(stringi)
 library(stringr)
 library(hash)
-
+library(ggplot2)
+library(tigris)
+library(tidycensus)
+library(sf)
+Sys.getenv("CENSUS_API_KEY")
 ```
 
 ```{r}
 
 cleaned_sewer_overflows <- read_csv("data/cleaned_sewer_overflows.csv") |>
   clean_names() 
+
+cleaned_sewer_overflows["county"][cleaned_sewer_overflows["county"] == "Baltimore Ciy"] <- "Baltimore City"
+cleaned_sewer_overflows["county"][cleaned_sewer_overflows["county"] == "Batimore City"] <- "Baltimore City"
+cleaned_sewer_overflows["county"][cleaned_sewer_overflows["county"] == "Cecil County"] <- "Cecil"
+cleaned_sewer_overflows["county"][cleaned_sewer_overflows["county"] == "Harford County"] <- "Harford"
   
 glimpse(cleaned_sewer_overflows)
 
@@ -111,28 +133,113 @@ mutate(date_discovered = mdy(date_discovered))
 
 ```
 
+```{r}
+
+ md_counties <- get_acs(geography = "county",
+    state = "MD",
+    year = 2021,
+    variables = "B01001_001",
+    geometry = TRUE) |>
+  clean_names()
+                    
+head(md_counties)
+
+```
+
 ## ***Section #2***
 
-In this section, I attempted to answer the questions listed at the top of the markdown file. 
+In this section, I attempted to answer the questions listed at the top
+of the markdown file.
 
-Q1: Which counties reported the most sewer overflows over the dataset's observed period of time?
+***Q1: Which counties reported the most sewer overflows over the data
+set's observed period of time?***
 
-We're starting the coding portion part of the project on an easy note. To answer this question I grouped the data by county, summarized with a new column called "overflow_count" and arranged the results in descending order. Immediately, I see that Allegany County has, by far, the most reported overflows over time with 10,653. The next highest is Baltimore City with 6,808; followed by Baltimore County with 1,892; Prince George's County with 1,470 and Montgomery County with 1,146 overflow incidents.
+To answer this question I grouped the data by county, summarized with a
+new column called "overflow_count" and arranged the results in
+descending order. Immediately, I see that Allegany County has, by far,
+the most reported overflows over time with 10,653. The next highest is
+Baltimore City with 6,808; followed by Baltimore County with 1,892;
+Prince George's County with 1,470 and Montgomery County with 1,146
+overflow incidents.
+
+I also included the geoid values for each county and matched them with
+the correct county so that I could create a data frame in which I could
+join the ACS data by geoid. That required my removal of random values
+like Virginia, Loudoun County, VA, and District of Columbia, in order to
+be able to merge with the right amount of rows.
 
 ```{r}
 
-cleaned_sewer_overflows |>
+geoid_mapping <- data.frame(
+county = c("Allegany", "Baltimore City", "Baltimore County", "Prince George's", "Montgomery", "Anne Arundel", 
+             "Dorchester", "Frederick", "Charles", "Harford", "Howard", "Washington", "Worcester", "St. Mary's", 
+             "Talbot", "Wicomico", "Somerset", "Cecil", "Queen Anne's", "Carroll", "Calvert", "Garrett", "Kent", "Caroline"),
+geoid = c("24001", "24510", "24005", "24033", "24031", "24003", "24019", "24021", "24017", "24025", "24027", 
+            "24043", "24047", "24037", "24041", "24045", "24039", "24015", "24035", "24013", "24009", "24023", "24029", "24011")
+)
+
+```
+
+```{r}
+
+overflow_count_geo <- cleaned_sewer_overflows |>
   group_by(county) |>
   summarise(overflow_count = n()) |>
+  filter(!(trimws(county) %in% c("Virginia", "Loudoun County, VA", "District of Columbia"))) |>
+  filter(county != "NA") |>
+  left_join(geoid_mapping, by = "county") |>
   arrange(desc(overflow_count))
 
 ```
 
-Q2: What is the percentage of reported overflows by county?
+```{r}
 
-Adding to the last codeblock, this question enables me to show the percentage breakdown of overflow incidents by county. I did this by mutating a new column called incident_pct which took the overflow incident count of a specific county, divided it by the sum of all overflow incidents and multiplied the results by 100 to get the percentage.
+glimpse(overflow_count_geo)
 
-Unsurprisingly, the results fall in line with what I observed in the first question. Allegany County had the highest share of incidents with 38.7 percent, followed by Baltimore City with 24.7 percent, then it drops significantly with Baltimore County at 6.88 percent and Prince George's County with 5.3 percent. 
+```
+
+As a follow-up to Q1, I took 2021 Maryland population data from the U.S.
+Census and joined it to my my overflow_count_geo data frame that I
+created. This helped me understand how many residents in each county are
+potentially impacted by sewer overflow events. However, I was mostly
+interested in getting the geoid and geometry information so that I could
+visualize my results on a map. I also wrote this new data frame as a csv
+in my data folder so that I could import it into Datawrapper.
+
+```{r}
+
+oc_geopop <- overflow_count_geo |>
+  left_join(md_counties, by = "geoid") |>
+  select(-c(variable, moe, name))
+
+```
+
+```{r}
+
+write_csv(oc_geopop, "data/oc_geopop.csv")
+
+```
+
+```{r}
+
+glimpse(oc_geopop)
+
+```
+
+***Q2: What is the percentage of reported overflows by county?***
+
+Adding to the last codeblock, this question enables me to show the
+percentage breakdown of overflow incidents by county. I did this by
+mutating a new column called incident_pct which took the overflow
+incident count of a specific county, divided it by the sum of all
+overflow incidents and multiplied the results by 100 to get the
+percentage.
+
+Unsurprisingly, the results fall in line with what I observed in the
+first question. Allegany County had the highest share of incidents with
+38.7 percent, followed by Baltimore City with 24.7 percent, then it
+drops significantly with Baltimore County at 6.88 percent and Prince
+George's County with 5.3 percent.
 
 ```{r}
 
@@ -140,55 +247,118 @@ cleaned_sewer_overflows |>
   group_by(county) |>
    summarise(overflow_count = n()) |>
   mutate(incident_pct = overflow_count / sum(overflow_count) * 100) |>
+  filter(county != "NA") |>
   arrange(desc(incident_pct))
 
 ```
 
-Q2 Follow-up: What about the distribution of overflows by county and year?
+***Q2 Follow-up: What about the distribution of overflows by county and
+year?***
 
-To complete this question I needed to separate the date_discovered column into separate columns in order to be able to group the data by year. I used the separate function and divided the original column into three columns: year, month and day. Then I was able to group the data by county and year, and then summarize with a column called overflow_count adding up a specific county's number of overflow incidents in a specific year.
+I thought this follow-up question would be more straightforward, but I
+struggled a lot with getting the results for this question and would
+probably need assistance in the future if I were to get to the bottom of
+it. I was happy with how the data was formatted when I ran the code
+block, but I'm certain that the overflow totals are off because the
+total of the Allegany County overflow incidents is nowhere near what I
+found in the first question, the same went for other counties. I kept
+this code in the project because I felt it was worthwhile to show my
+progress and learn from falling short of my goal. It's also entirely
+possible that I was overthinking this task.
 
-Then, I used the ungroup function to section off the initial portion of the code block. I mutated a new column called total_count_year, which is the sum of all reported overflow incidents among counties for a specific year. Calculating that total allowed me to add another column showing the percentage for how much a certain county's number of overflows accounted for the total overflows among all counties for that year. I followed a similar process to add a column after that showing the percentage of a county's overflow incidents from a certain year in relation to its total number of incidents over all recorded years in the data set.
+I tried to complete this question by focusing on finding out how many
+overflow incidents each county had in a specific year, a total count of
+all overflow incidents across counties for that year and a percentage
+breakdown of the share of overflow incidents each county had within each
+year. I grouped the data by county and year, with the year value being
+extracted from the last four characters of the date column.
 
-Completing these steps allowed me to see which counties had particularly severe years in terms of overflow incidents in relation to other counties and historically.
+Then I calculated the number of distinct dates within each group of
+county and year and summarized the results in the column called
+'overflow_count.' The n_distinct function in the summarize code helped
+me calculate the number of distinct dates within each group of county
+and year.
 
-In terms of newsworthy results, Allegany County in 2007 accounted for 49 percent of all overflow incidents during that year. In 2011, Allegany County saw nearly eight percent of its total overflow incidents occur. Baltimore City accounted for 44 percent of incidents in 2021.
+Following that step, I grouped by year and mutated to create two new
+columns. The first column calculated the total number of incidents
+within each year by adding the overflow count. The second column
+calculated each county's percentage of overflow incidents by year in
+relation to all overflow incidents across counties for that year.
+Finally, the data is arranged by county and year.
+
+I also think that it would be worthwhile and potentially newsworthy to
+go even further and compute the percentage of a county's overflow
+incidents from a certain year in relation to its total number of
+incidents over all recorded years in the data set. It would help me
+understand which counties had particularly active years in terms of
+overflow incidents in relation to other counties. It would also help me
+complete a historical comparison of the overflow incidents from a
+specific year within a county and its historical total.
+
+Here is the code that I tried to use:
 
 ```{r}
 
 cleaned_sewer_overflows |>
-  separate(date_discovered, into = c("year", "month", "day"), sep = "-") |>
-    group_by(county, year) |>
-      summarize(overflow_count = n()) |>
-  ungroup() |>
+  group_by(county, year = substr(date_discovered, nchar(date_discovered) - 3, nchar(date_discovered))) |>
+  summarise(overflow_count = n_distinct(date_discovered)) |>
   group_by(year) |>
-    mutate(total_count_year = sum(overflow_count),
+  mutate(total_count_year = sum(overflow_count),
          incident_pct_that_year = overflow_count / total_count_year * 100) |>
-  ungroup() |>
-    group_by(county) |>
-      mutate(total_count_all_years = sum(overflow_count),
-         incident_pct_all_years = overflow_count / total_count_all_years * 100) |>
-  select(-total_count_all_years) |>
   arrange(county, year)
-  
+
 ```
 
-Q3: Which counties had the most severe sewer overflows (by quantity, time or both) and when did they occur?
+***Q3: Which counties had the most severe sewer overflows (by quantity,
+time or both) and when did they occur?***
+
+To find the answer to this question, I grouped the data by county and
+date discovered. I then only kept the columns I was interested in
+seeing: date_discovered, duration_days, hours, minutes,
+quantity_in_gallons_estimated, cause and county. Then I arranged the
+data in descending order based on duration and
+quantity_in_gallons_estimated.
+
+The longest sewer overflow event, according to the data, occurred in
+Dorchester County on Sept. 25, 2006. This event in particular lasted 15
+years (5,475 days) and had an estimated 702,000 gallons of overflow
+water. The sewer overflow event with the highest estimated quantity in
+gallons occurred in Allegany County in 2014 with 106,102,592 gallons.
+This event did not have duration data that we could measure against the
+other event.
 
 ```{r}
 
 cleaned_sewer_overflows |>
-  group_by(county) |>
-  arrange(desc(net_in_gallons_estimated)) 
-
-
-
+  group_by(county, date_discovered) |> 
+  select(-c(overflow_type, municipality_facility, npdes_number, location, zip_code, collection_system, net_in_gallons_estimated, watershed, receiving_waters, notes, penalty_collected, latitude, longitude, penalty_comments, time_discovered)) |>
+  arrange(desc(duration_days), desc(duration_hours), desc(duration_minutes), desc(quantity_in_gallons_estimated))
+  #arrange(desc(quantity_in_gallons_estimated))
 
 ```
 
-Q4: What is the average quantity of gallons of sewer overflows per event versus the estimated net in gallons?
+As a follow-up to that question, I followed the same process to identify
+the counties with overflow events highest in net estimated gallons. Once
+again, the answer was the 2014 Allegany County incident.
 
-There wasn't much code needed to calculate this value. I added the quantity_in_gallons_estimated column while removing any NA values and then divided by the total number of incidents. I then did same for the net_in_gallons_estimated column to see if there was a significant difference from the first column. I added the answers within each code block below.
+```{r}
+
+cleaned_sewer_overflows |>
+  group_by(county, date_discovered) |> 
+  select(-c(overflow_type, municipality_facility, npdes_number, location, zip_code, collection_system, watershed, receiving_waters, notes, penalty_collected, latitude, longitude, penalty_comments, time_discovered, quantity_in_gallons_estimated)) |>
+arrange(desc(net_in_gallons_estimated))
+
+```
+
+***Q4: What is the average quantity of gallons of sewer overflows per
+event versus the estimated net in gallons?***
+
+There wasn't much code needed to calculate this value. I added the
+quantity_in_gallons_estimated column while removing any NA values and
+then divided by the total number of incidents. I then did same for the
+net_in_gallons_estimated column to see if there was a significant
+difference from the first column. I commented the answers within each
+code block below.
 
 ```{r}
 
@@ -204,9 +374,13 @@ sum(cleaned_sewer_overflows$net_in_gallons_estimated, na.rm = TRUE) / 27479
 
 ```
 
-Q5: Which Maryland watersheds have been most impacted by sewer overflows?
+***Q5: Which Maryland watersheds have been most impacted by sewer
+overflows?***
 
-A group_by, summarise and filtering of "NA" results led me to acquiring the count of incidents occurring in specific watersheds. The highest amount was "Unknown" watersheds, followed by George's Creek as the highest named watershed.
+A group_by, summarize and filtering of "NA" results led me to acquiring
+the count of incidents occurring in specific watersheds. The highest
+amount was "Unknown" watersheds, followed by George's Creek as the
+highest named watershed.
 
 ```{r}
 
@@ -218,9 +392,12 @@ cleaned_sewer_overflows |>
 
 ```
 
-Q6: What are the most common types of sewer overflows? 
+***Q6: What are the most common types of sewer overflows?***
 
-First, I made a new data frame that isolates blockage causes and a total count. I wasn't satisfied with this raw count because I was more interested in finding out the number of times they were either the sole and/or contributing factor in a sewer blockage.
+First, I made a new data frame that isolates blockage causes and a total
+count. I wasn't satisfied with this raw count because I was more
+interested in finding out the number of times they were either the sole
+and/or contributing factor in a sewer blockage.
 
 ```{r}
 
@@ -233,19 +410,30 @@ blockage_causes <- cleaned_sewer_overflows |>
 
 ```
 
-One method to accomplish this would be to filter the cause column in this data frame and string detect each major cause. However, this method would omit results nested within columns that have multiple causes contributing to a blockage.
+One method to accomplish this would be to filter the cause column in
+this data frame and string detect each major cause. However, this method
+would not accurately track causes nested within rows that have multiple
+causes contributing to a blockage.
 
 ```{r}
-#Don't run this codeblock
+#Don't need to run this code block
 blockage_causes |> 
   filter(str_detect(cause, "Precipitation")) |> 
     summarise(cause = "Precipitation", total = sum(cause_count))
 
 ```
 
-Instead, I opted to create a 'for' loop. I first created a list of the most common factors contributing to sewer blockages and overflows. The next line of code "h = hash()" creates an empty hash in which we store key value pairs where the key is the 'cause' of the sewer overflow and the value is the count.
+Instead, I opted to create a 'for' loop. I first created a list of the
+most common factors contributing to sewer blockages and overflows. The
+next line of code "h = hash()" creates an empty hash in which we store
+key value pairs where the key is the 'cause' of the sewer overflow and
+the value is the count.
 
-From there, I created the loop checking the data frame for each item in the list. Essentially, this loop is string detecting for each of these causes, then summarizing the count in which they appear. Finally, I wrote code to turn the result of the for loop into a separate data frame called 'cause_counts' that I could use to conduct further analysis.
+From there, I created the loop checking the data frame for each item in
+the list. Essentially, this loop is string detecting for each of these
+causes, then summarizing the count in which they appear. Finally, I
+wrote code to turn the result of the for loop into a separate data frame
+called 'cause_counts' that I could use to conduct further analysis.
 
 ```{r}
 
@@ -271,7 +459,15 @@ cause_counts <- as.data.frame(hash_list)
 
 ```
 
-With this last code block below, I can see that precipitation, rain, rags, grease and roots are the top five culprits. Precipitation and rain could mean the same thing, however, it's tough to know exactly how each were meant to be interpreted so I left them apart. I then took the total number of incidents (rows) from the original data frame and divided each count by that number to find the frequency in which these terms appeared in the cause column.
+With this last code block below, I can see that precipitation, rain,
+rags, grease and roots are the top five culprits. Precipitation and rain
+could mean the same thing, however, it's tough to know exactly how each
+were meant to be interpreted in the original data frame so I left them
+apart. I then took the total number of incidents (rows) from the
+original data frame and divided each count by that number to find the
+frequency in which these terms appeared in the cause column. I then
+wrote that new data frame as a CSV file so that I could import it into
+Datawrapper for visualization.
 
 ```{r}
 
@@ -281,7 +477,103 @@ cause_counts |>
 
 ```
 
+```{r}
 
+write_csv(cause_counts, "data/cause_counts.csv")
 
+```
 
+## ***Section #3***
 
+This final section contains potential story ideas and my two data
+visualization examples.
+
+Chart: "Top Contributing Causes of Maryland Sewer Overflow Incidents"
+<https://datawrapper.dwcdn.net/2E9nb/1/>
+
+```{r}
+
+cause_counts |>
+  ggplot() +
+  geom_bar(aes(x = reorder(causes, -counts), weight = counts)) +
+  labs(
+    title = "Top Contributing Causes of Maryland Sewer Overflow Incidents",
+    x = "Overflow Cause",
+    y = "Number of Mentions",
+    caption = "Source: Maryland Department of the Environment") +
+  theme(
+    axis.text.x = element_text(angle = 45,  hjust=1))
+
+```
+
+Map: "Counties Reporting Sewer Overflows Between 2005-2023"
+<https://datawrapper.dwcdn.net/4d31g/1/>
+
+```{r}
+
+ggplot() +
+  geom_sf(data = oc_geopop, aes(fill = overflow_count, geometry = geometry)) +
+  scale_fill_viridis_c(option = "magma") +  
+  theme_minimal() +
+  labs(
+    title = "Counties Reporting Sewer Overflows Between 2005-2023",
+    caption = "Source: Maryland Department of the Environment") 
+
+```
+
+Story Ideas and Questions Worth Exploring:
+
+-   #1: What's going on in Allegany County and why does it have so many
+    more sewer overflow incidents than the rest of the state? Over the
+    time period that the data set covers, Allegany County saw
+    significantly more overflow incidents compared to other counties.
+    With over 10,000 reported sewer overflows over roughly 18 years, it
+    had nearly 4,000 more incidents than the next closest county,
+    Baltimore City. This story could be a deep dive into the county by
+    looking into its events to determine their severity and whether the
+    frequency of its incidents have increased, decreased or remained
+    consistent over time. Also, what are specific problem areas within
+    the county? We would map those results, as well as identify whether
+    these incidents are typically caused by the same factors.
+
+-   #2: Precipitation and rainfall are the top contributors to sewer
+    overflow incidents in Maryland. How might Maryland counties fare in
+    the future? For this story, I'd want to see the frequency or
+    severity of overflow incidents compared to Maryland rainfall data
+    and events over the years. Does the rainfall data warrant the amount
+    of overflow incidents in certain Maryland counties? And for 2024,
+    what are the projections among meteorologists regarding expected
+    rainfall and which counties should be prepared to bolster their
+    sewage systems? In an earlier code block, I showed the percentage
+    breakdown of contributing overflow causes in relation to the whole
+    original data frame. However, one avenue potentially worth exploring
+    is going even further and calculating that percentage on a
+    county-by-county basis (i.e., what were the most prevalent overflow
+    causes by county and could we pin down specific years during which
+    these causes were more prevalent?).
+
+-   #3: What's the story with the 2006 overflow incident in Dorchester
+    County? This could have been an error on either the part of the
+    person who reported the incident or someone who imported the data
+    into the data set. I couldn't find a story online about this
+    overflow that lasted basically 15 years. Even though it wasn't the
+    worst event in terms of the overflow quantity in gallons, it still
+    seems worthwhile to find out what happened there. If the data is
+    correct, it would be nice to follow up with a county official to
+    figure out what work they completed to stop the overflow and gain a
+    better understanding of how the county has updated its sewer
+    infrastructure.
+
+-   #4: I wrote about my Q2 follow-up question shortcomings in an
+    earlier code block and I think it's potentially a worthwhile story
+    to explore. Please refer to that section to read my reasoning.
+
+-   #5: My classmate, Adriana Navarro, recommended that I speak with UMD
+    professor Marccus Hendricks about my project. Hendricks is an
+    associate professor of urban studies and (environmental) planning
+    and is the director of the Stormwater Infrastructure Resilience and
+    Justice (SIRJ) Lab. It would be interesting to get his perspective
+    about my results from identifying the most common causes of sewer
+    overflows and how they compare to any research that he's conducted
+    into the same issue. Here is a link to Hendrick's faculty bio:
+    <https://arch.umd.edu/people/marccus-hendricks>
