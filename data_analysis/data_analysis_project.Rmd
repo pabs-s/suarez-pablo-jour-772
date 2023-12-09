@@ -57,6 +57,11 @@ library(refinr)
 library(lubridate)
 library(dplyr)
 library(readr)
+library(tidytext)
+
+#install hash package if you need to
+#install.packages("hash")
+library(hash)
 
 ```
 
@@ -140,6 +145,7 @@ bgg_dataset |>
   arrange(desc(average_rating))
 
 ```
+
 ## Q2: How does the complexity of board games vary based on the recommended minimum age?
 
 ```{r}
@@ -280,15 +286,192 @@ What was clear from this result was that for the most part strategy games seemed
 bgg_dataset |>
   group_by(year_published, domains) |>
   summarise(count = n()) |>
+  filter(domains != "") |>
   arrange(desc(year_published), desc(count))
   
+```
+
+Although the code block below does not give us a breakdown of domains by year, it does help us see a broad distribution of popular domains. This helped us understand a major shortcoming of our original data frame, which is that we're missing domain information from 13,188 games out of 23,343. Also, a quick addition of our values adds up to 23,066, which suggests that we have 277 games that are not represented here as well. Beyond that, the first actual result falls in line with our initial observations which is that strategy games appear the most frequently within our data.
+
+Acquiring the domain information would be something that we'd do if we were to continue working on the project.
+
+```{r}
+
+bgg_dataset |>
+  select(domains) |>
+  unnest_tokens(bigram, domains, token = "ngrams", n = 2) |>
+  separate(bigram, c("word1", "word2"), sep = " ") |>
+  mutate(bigram = case_when(
+    word1 == "games" & word2 == "party" ~ "party games",
+    word1 == "games" & word2 == "children's" ~ "children's games",
+    word1 == "games" & word2 == "family" ~ "family games",
+    word1 == "games" & word2 == "wargames" ~ "wargames",
+    word1 == "games" & word2 == "customizable" ~ "customizable games",
+    word1 == "games" & word2 == "strategy" ~ "strategy games",
+    word1 == "games" & word2 == "thematic" ~ "thematic games",
+    TRUE ~ paste(word1, word2, sep = " ")
+  )) |>
+  group_by(bigram) |>
+  tally(sort = TRUE)
+
 ```
 
 ## Q5: Measuring by year and decade, what are the top average board games?
 
 Upon looking at the years_published we calculated that there are approximately 84 games with missing unpublished years. We researched and added the year published for top rated games. From there, we categorized games by the following parameters to determine the highest and lowest ranking game per time-period:
 
-Games Rated Before 1900:
+Pre-year 0 
+
+Pre-1900
+- 1000 to 1499
+- 1500 to 1599
+- 1600 to 1699
+- 1700 to 1799
+- 1800 to 1899
+
+Post-1900
+We grouped by decade.
+
+```{r}
+
+#arrange by the average rating
+
+bgg_ranking_year <- bgg_dataset |> 
+  select(year_published, name, rating_average, domains, mechanics) |> 
+  arrange(desc(rating_average))
+
+glimpse(bgg_ranking_year)
+
+bgg_ranking_year
+
+```
+
+Erune came in first place for the highest average rating; however, it did not include the year_published. According to boardgamegeek.com, it was released in 2021. https://boardgamegeek.com/boardgame/275777/erune/credits
+
+```{r}
+
+#making a new data frame with the year_published values
+bgg_ranking_year_missing <- tibble(
+  name = c("Erune"),
+  year_published = c(2021)
+) 
+
+bgg_ranking_year_missing <- bgg_ranking_year_missing |> 
+  mutate(year_published = as.integer(year_published))
+
+bgg_ranking_year_missing 
+
+```
+
+Top missing board game years to add in:
+- War Titans: Invaders Must Die! | 2019 | https://boardgamegeek.com/boardgameversion/323309/kickstarter
+
+- Tindaya | 2022 | https://boardgamegeek.com/boardgame/317511/tindaya/credits
+
+- Thug Lie the Game | 2019 | https://boardgamegeek.com/boardgame/211693/thug-life-game/credits
+
+- Ignite |  2021 | https://boardgamegeek.com/boardgame/260934/ignite/credits
+
+- Moonstone | 2019 | https://www.tabletopgamingnews.com/goblin-king-games-announces-march-release-date-for-moonstone/
+
+
+```{r}
+bgg_ranking_year |> 
+  arrange(year_published)
+
+bgg_ranking_year
+
+#there are 84 missing years_published 
+```
+
+```{r}
+
+#adding in the top missing years
+
+bgg_ranking_year_missing <- tibble(
+  name = c("Erune, Tindaya, Thug Lie the Game, Ignite, Moonstone"),
+  year_published = c(2021, 2022, 2019, 2021, 2019)
+) 
+
+bgg_ranking_year_missing <- bgg_ranking_year_missing |> 
+  mutate(year_published = as.integer(year_published))
+
+bgg_ranking_year_missing 
+
+```
+
+Join the data frames:
+Data frame 1: bgg_ranking_year
+Data frame 2: bgg_ranking_year_missing
+
+Disclaimer: We used Chat GPT to help join the two data frames, to account for empty values in the column "year_published," while ensuring the values for games without empty values in the data frame "bgg_ranking_year" remained in place. We tested the code for the board game "Erune" and then went back to add in other missing years for the top 20 results. 
+
+https://chat.openai.com/share/621ec676-846d-4eea-8132-29b0eec3ad0e
+
+```{r}
+bgg_dataset_year_join <- left_join(bgg_ranking_year, bgg_ranking_year_missing, by = "name") %>%
+  mutate(year_published = if_else(year_published.x %in% c("", "0"), year_published.y, year_published.x)) %>%
+  select(-year_published.x, -year_published.y)
+
+#checking join by filtering the game Erune
+#bgg_dataset_year_join %>%
+#  filter(name == "Erune")
+
+bgg_dataset_year_join
+
+```
+
+***Filter and find top game by time-period:***
+
+Pre-year 0
+- Before 0
+
+Pre-1900
+- 1000 to 1499
+- 1500 to 1599
+- 1600 to 1699
+- 1700 to 1799
+- 1800 to 1899
+
+By decade from 1900 onward:
+- 1900 to 1909
+- 1910 to 1919
+- 1920 to 1929
+- 1930 to 1939
+- 1940 to 1949
+- 1950 to 1959
+- 1960 to 1969
+- 1970 to 1979
+- 1980 to 1989
+- 1990 to 1999
+- 2000 to 2009
+- 2010 to 2019
+- 2020 to 2022
+
+```{r}
+
+#arrange by year_published
+bgg_dataset_year_join |> 
+  arrange(year_published)
+
+```
+
+***Games Rated BC***
+
+```{r}
+
+games_bc <- bgg_dataset_year_join |> 
+  filter(year_published <= "0") |> 
+  arrange(desc(rating_average))
+
+games_bc
+  
+#highest rating = Go
+#lowest rating = Tic-Tac-Toe
+
+```
+
+**Games Rated before 1900**
 
 - 1000 to 1499
 Highest Rating = Chu Shogi
@@ -296,7 +479,7 @@ Lowest Rating = Fox and Geese
 
 - 1500 to 1599
 Highest Rating = Shogi
-Lowest Rating = Bingo
+Lowest Ratingg = Bingo
 
 - 1600 to 1699 
 Highest Rating = Cribbage
@@ -311,6 +494,7 @@ Highest Rating = Sheepshead
 Lowest Rating = Bunco
 
 ```{r}
+
 #plug dates into filter 
 
 games_pre1900 <- bgg_dataset_year_join |> 
@@ -322,7 +506,8 @@ games_pre1900 <- bgg_dataset_year_join |>
 games_pre1900
 
 ```
-Games Rated by Decade from 1900-Onward:
+
+**Games rated by decade 1900 onward**
 
 - 1900 to 1909
 Highest Rating = 500
@@ -353,7 +538,7 @@ Highest Rating = Strat-O-Matic Baseball
 Lowest Rating = Kreskin's ESP
 
 - 1970 to 1979
-Highest Rating = Sports Action Canadian Pro Football
+Highest Ratingg = Sports Action Canadian Pro Football
 Lowest Rating = The Ungame
 
 - 1980 to 1989
@@ -377,6 +562,7 @@ Highest Rating = DEFCON 1
 Lowest Rating = The Umbrella Academy Game
 
 ```{r}
+
 #plug dates into filter 
 
 games_post1900 <- bgg_dataset_year_join |> 
@@ -389,3 +575,31 @@ games_post1900
 
 ```
 
+## ***Project Milestone #5***
+
+This is the last milestone before completing the project. Here is what was expected of us:
+
+Final deliverable. Provide the url of your data analysis notebook, which should include significant portions of narrative along with your code. I should be able to run your notebook from start to finish without errors, with the exception of the file paths for loading large datasets. If you raise a question in your narrative, be sure to answer it. Be sure to describe your most important and newsworthy findings to me as if you were pitching a story about them, including some discussion of what your reporting plans would entail - what would you need/want to do to make this a better story?
+
+Important and/or Newsworthy Findings:
+
+***Keys to success for game makers. An exercise in game design.***
+Strategy and family games with a rolling/dice rolling mechanic were some of the most common but also highly rated games in the BGG data. Games with a shorter playtime of usually around 30 minutes had an average rating of 6.17, while longer games with longer playtime saw lower ratings and smaller sample sizes.
+
+We think this is newsworthy because it's valuable for creators to see game design aspects that can contribute to either higher ratings or toward increasing sales and replayability. We'd like to talk to some of the designers of top games on our list to get their thoughts about our findings. What expectations in terms of ratings or sales might they have with creating a game geared toward strategy or family domains? How do they feel about rolling and dice rolling appearing as a common mechanic and what does that element bring to a game? How do they feel about the popularity of shorter playtime versus longer playtime? What are the challenges in creating a shorter game that can be played infinitely? From their experience, what are mechanics or domains they've found to be important contributors to successful games? Conversely, what have they found to not be popular among players?
+
+***Catan stands the test of time...and popular opinion.***
+Published in 1995, Catan is the third most rated game in the BGG rankings (101,510 ratings) with an average rating of 7.15. Also impressive is the fact that four out of the top five most rated games are considered family games and strategy games. Each of these games carried ratings above 7, which is notable considering it's harder to achieve a high average rating with a large sample size. The only two games with more user ratings than Catan were Pandemic (102,214 ratings and 7.61 average rating) and Carcassonne (101,853 ratings and 7.42 average). Catan is also the second-most owned game in the rankings behind Pandemic.
+
+If we were to continuing reporting on this story, we'd probably want to cross-reference Catan's BGG ranking with other comparable ranking sites. We could utilize user reviews from websites selling the game and even seek out board game communities, game stores or enthusiasts who hold playing sessions to get their thoughts about the game. Some questions we'd ask are:
+- What are the social aspects of the game that you enjoy? Why do you think Catan is still relevant almost two decades after its inception? What is your relationship with the game, when were you introduced to it and how does it compare to other board games you've played over the years? Is it worthy of being one of the most-played and highest-rated games of all time? 
+
+***Go is the most popularly rated Before Common Era (BC) game.***
+The game has an average rating of 7.64 and ranks 173 overall in the BGG list. Conversely, Tic-Tac-Toe was the worst-rated BC era game with a 2.68 average rating and was nearly last in the list in general.
+
+We think it would be fun to do a historical profile of the game. What are its exact origins? What's its cultural meaning? What aspects of the game have and haven't changed over the centuries since its introduction? What factors have contributed to its longevity? How was it impacted when translated to digital/online versions? We'd need to speak with Go experts, board game historians and find communities with players that can speak on how the game has impacted their lives.
+
+***Review the Top Games of 2023***
+As mentioned in milestone four, we'd like to review the best games of 2023. Specifically, we'd like to see if the top games from this year possess aspects that align with some of the top games from our data set. For example, are games this year geared toward strategy/family domains? What are their primary mechanics? Which games are highest in average rating versus the number of owned users? 
+
+To accomplish this, we'd have to gather sale information from a number of different retailers, as well as conduct an analysis of user reviews across a number of websites or databases to obtain a reasonable sample size.
