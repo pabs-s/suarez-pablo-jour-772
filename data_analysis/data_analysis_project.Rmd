@@ -279,7 +279,7 @@ bgg_dataset |>
 
 To find out, we grouped the data by year published and domains, then summarized a count for games in each domain and arranged in descending order by year published and count. 
 
-What was clear from this result was that for the most part strategy games seemed to be at the top spot or within a couple of spots from the top of the list every year. However, there are quite a few games that were ommitted from this list because they did not have a value in the domains column. We also can see that some of the domains are nested within certain rows. Therefore, more work might be needed to get a more representative count of domains.
+What was clear from this result was that, for the most part, strategy games seemed to be at the top spot or within a couple of spots from the top of the list every year. However, there are quite a few games that were omitted from this list because they did not have a value in the domains column. We also can see that some of the domains are nested within certain rows. Therefore, more work might be needed to get a more representative count of domains.
 
 ```{r}
 
@@ -587,6 +587,9 @@ Important and/or Newsworthy Findings:
 Strategy and family games with a rolling/dice rolling mechanic were some of the most common but also highly rated games in the BGG data. Games with a shorter playtime of usually around 30 minutes had an average rating of 6.17, while longer games with longer playtime saw lower ratings and smaller sample sizes.
 
 We think this is newsworthy because it's valuable for creators to see game design aspects that can contribute to either higher ratings or toward increasing sales and replayability. We'd like to talk to some of the designers of top games on our list to get their thoughts about our findings. What expectations in terms of ratings or sales might they have with creating a game geared toward strategy or family domains? How do they feel about rolling and dice rolling appearing as a common mechanic and what does that element bring to a game? How do they feel about the popularity of shorter playtime versus longer playtime? What are the challenges in creating a shorter game that can be played infinitely? From their experience, what are mechanics or domains they've found to be important contributors to successful games? Conversely, what have they found to not be popular among players?
+
+To complement this article or do more background research, we could attend PAX East (https://east.paxsite.com/) in March to interview designers on mechanics they are experimenting with, and see if it trends with what we found.
+
 
 ***Catan stands the test of time...and popular opinion.***
 Published in 1995, Catan is the third most rated game in the BGG rankings (101,510 ratings) with an average rating of 7.15. Also impressive is the fact that four out of the top five most rated games are considered family games and strategy games. Each of these games carried ratings above 7, which is notable considering it's harder to achieve a high average rating with a large sample size. The only two games with more user ratings than Catan were Pandemic (102,214 ratings and 7.61 average rating) and Carcassonne (101,853 ratings and 7.42 average). Catan is also the second-most owned game in the rankings behind Pandemic.
